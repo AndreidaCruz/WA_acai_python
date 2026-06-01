@@ -1,0 +1,73 @@
+{
+  "collapse-filter": true,
+  "search": "-changelog -CHANGELOG",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": false,
+  "existingFilesOnly": true,
+  "collapse-color-groups": true,
+  "colorGroups": [
+    {
+      "query": "path:\"README.md\" OR path:\"AGENTS.md\" OR path:\"project.overview.md\" OR path:\"project.update.md\" OR path:\"project.migrations.md\"",
+      "color": {
+        "a": 1,
+        "rgb": 15070091
+      }
+    },
+    {
+      "query": "file:.py",
+      "color": {
+        "a": 1,
+        "rgb": 10461087
+      }
+    },
+    {
+      "query": "file:.js OR file:.jsx OR file:.ts OR file:.tsx",
+      "color": {
+        "a": 1,
+        "rgb": 12040119
+      }
+    },
+    {
+      "query": "file:.json OR file:.yaml OR file:.yml OR file:.toml",
+      "color": {
+        "a": 1,
+        "rgb": 12566463
+      }
+    },
+    {
+      "query": "path:\"tests/\"",
+      "color": {
+        "a": 1,
+        "rgb": 12884918
+      }
+    },
+    {
+      "query": "path:\"docs/\"",
+      "color": {
+        "a": 1,
+        "rgb": 13619151
+      }
+    },
+    {
+      "query": "path:\"legacy/\" OR path:\"docs/legacy\"",
+      "color": {
+        "a": 1,
+        "rgb": 11119017
+      }
+    }
+  ],
+  "collapse-display": true,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": true,
+  "centerStrength": 0.518713248970312,
+  "repelStrength": 10,
+  "linkStrength": 1,
+  "linkDistance": 250,
+  "scale": 0.6666666666666666,
+  "close": true
+}

@@ -1,0 +1,10 @@
+{
+  "name": "WA Açaí",
+  "short_name": "WA Açaí",
+  "description": "Catálogo, pedidos e estoque de açaí.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#12081d",
+  "theme_color": "#6F2DBD",
+  "icons": []
+}
