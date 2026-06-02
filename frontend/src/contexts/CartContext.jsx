@@ -31,9 +31,11 @@ export function CartProvider({ children }) {
         const complements = enabled
           ? exists
             ? item.complements.map((comp) =>
-                comp.stock_product_id === stockProduct.id ? { ...comp, quantity_consumed: 1 } : comp,
+                comp.stock_product_id === stockProduct.id
+                  ? { ...comp, quantity_consumed: 1, stock_product: stockProduct }
+                  : comp,
               )
-            : [...item.complements, { stock_product_id: stockProduct.id, quantity_consumed: 1 }]
+            : [...item.complements, { stock_product_id: stockProduct.id, quantity_consumed: 1, stock_product: stockProduct }]
           : item.complements.filter((comp) => comp.stock_product_id !== stockProduct.id)
         return { ...item, complements }
       }),
@@ -49,7 +51,15 @@ export function CartProvider({ children }) {
   }
 
   const total = useMemo(() => {
-    return items.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+    return items.reduce((sum, item) => {
+      const paidComplements = item.complements.slice(3)
+      const complementsTotal = paidComplements.reduce(
+        (complementsSum, complement) =>
+          complementsSum + (complement.stock_product?.complement_extra_price || 0) * complement.quantity_consumed,
+        0,
+      )
+      return sum + item.product.price * item.quantity + complementsTotal * item.quantity
+    }, 0)
   }, [items])
 
   return <CartContext.Provider value={{ items, total, addItem, setComplement, removeItem, clear, setItems }}>{children}</CartContext.Provider>

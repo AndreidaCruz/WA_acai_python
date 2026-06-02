@@ -103,19 +103,21 @@ def create_order(db: Session, payload, user_id: int | None = None) -> Order:
             unit_price=product.price,
             total_price=product.price * item.quantity,
         )
-        for complement in item.complements:
+        for complement_index, complement in enumerate(item.complements):
             stock = db.get(StockProduct, complement.stock_product_id)
             if stock is None or not stock.active or not stock.available_for_complement:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Complemento {complement.stock_product_id} indisponível")
+            is_paid = complement_index >= 3
+            complement_unit_price = stock.complement_extra_price * complement.quantity_consumed if is_paid else 0.0
             order_item.complements.append(
                 OrderItemComplement(
                     stock_product_id=stock.id,
                     stock_product_name=stock.name,
                     quantity_consumed=complement.quantity_consumed,
-                    extra_price=stock.complement_extra_price * complement.quantity_consumed,
+                    extra_price=complement_unit_price,
                 )
             )
-            order_item.total_price += stock.complement_extra_price * complement.quantity_consumed * item.quantity
+            order_item.total_price += complement_unit_price * item.quantity
         subtotal += order_item.total_price
         order.items.append(order_item)
     order.subtotal = subtotal

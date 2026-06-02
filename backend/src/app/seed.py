@@ -43,20 +43,21 @@ def seed_data(db: Session) -> None:
     db.flush()
 
     product_items = {
-        "Açaí 300ml": (13.0, {"Açaí Tradicional": 300.0}),
-        "Açaí 500ml": (17.0, {"Açaí Tradicional": 500.0}),
-        "Açaí 700ml": (22.0, {"Açaí Tradicional": 700.0}),
-        "Milk Shake": (18.0, {}),
-        "Combo": (29.0, {}),
+        "Açaí 300ml": (13.0, {"Açaí Tradicional": 300.0}, "/products/acai-300ml.png"),
+        "Açaí 500ml": (17.0, {"Açaí Tradicional": 500.0}, "/products/acai-500ml.png"),
+        "Açaí 700ml": (22.0, {"Açaí Tradicional": 700.0}, "/products/acai-700ml.png"),
+        "Milk Shake": (18.0, {}, "/products/milk-shake.png"),
+        "Combo": (29.0, {}, "/products/combo.png"),
     }
     existing_products = {item.name: item for item in db.scalars(select(Product)).all()}
-    for name, (price, recipes) in product_items.items():
+    for name, (price, recipes, image_url) in product_items.items():
         product = existing_products.get(name)
         if product is None:
-            product = Product(name=name, description=f"Produto {name}", price=price)
+            product = Product(name=name, description=f"Produto {name}", price=price, image_url=image_url)
             db.add(product)
             db.flush()
         product.price = price
+        product.image_url = image_url
         stock_lookup = {item.name: item for item in db.scalars(select(StockProduct)).all()}
         for stock_name, amount in recipes.items():
             stock = stock_lookup[stock_name]

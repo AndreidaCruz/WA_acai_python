@@ -28,6 +28,14 @@ npm install
 npm run dev
 ```
 
+Windows launcher:
+
+```bat
+start-wa-acai.bat
+```
+
+The launcher will create `.venv` if needed, install dependencies, start backend and frontend, and open the browser automatically.
+
 ## Admin access
 
 The first admin is created through the one-time setup screen in the admin area.

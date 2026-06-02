@@ -27,12 +27,16 @@ export function AuthProvider({ children }) {
     load()
   }, [])
 
+  async function setSession(token) {
+    setAuthToken(token)
+    const { data } = await api.get('/api/auth/me')
+    setUser(data)
+    return data
+  }
+
   async function login(email, password) {
     const { data } = await api.post('/api/auth/login', { email, password })
-    setAuthToken(data.access_token)
-    const me = await api.get('/api/auth/me')
-    setUser(me.data)
-    return me.data
+    return setSession(data.access_token)
   }
 
   function logout() {
@@ -40,7 +44,7 @@ export function AuthProvider({ children }) {
     setAuthToken(null)
   }
 
-  return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, loading, login, logout, setSession }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
