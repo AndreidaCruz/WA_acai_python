@@ -15,6 +15,13 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
+    cors: {
+      origin: [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'https://waacaipython.vercel.app',
+      ],
+    },
     proxy: {
       '/api': 'http://127.0.0.1:8000',
       '/ws': {
