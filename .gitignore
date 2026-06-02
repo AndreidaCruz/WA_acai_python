@@ -47,3 +47,5 @@ pyvenv.cfg
 *.code-workspace
 .DS_Store
 Thumbs.db
+frontend-vite.err.log
+frontend-vite.out.log
