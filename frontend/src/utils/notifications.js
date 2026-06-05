@@ -23,9 +23,20 @@ export function subscribeNotifications(listener) {
 
 export function getErrorMessage(error) {
   const responseDetail = error?.response?.data?.detail
+  const responseMessage = error?.response?.data?.message
+  const responseError = error?.response?.data?.error
 
   if (Array.isArray(responseDetail)) {
-    return responseDetail.join(' ')
+    const messages = responseDetail
+      .map((item) => {
+        if (typeof item === 'string') return item
+        if (item && typeof item === 'object') {
+          return item.msg || item.message || item.detail || item.type || JSON.stringify(item)
+        }
+        return ''
+      })
+      .filter(Boolean)
+    if (messages.length > 0) return messages.join(' ')
   }
 
   if (typeof responseDetail === 'string' && responseDetail.trim()) {
@@ -34,6 +45,14 @@ export function getErrorMessage(error) {
     if (responseDetail === 'Admin access required') return 'Você não tem permissão de administrador.'
     if (responseDetail === 'User not found') return 'Usuário não encontrado.'
     return responseDetail
+  }
+
+  if (typeof responseMessage === 'string' && responseMessage.trim()) {
+    return responseMessage
+  }
+
+  if (typeof responseError === 'string' && responseError.trim()) {
+    return responseError
   }
 
   if (error?.message === 'Network Error') {

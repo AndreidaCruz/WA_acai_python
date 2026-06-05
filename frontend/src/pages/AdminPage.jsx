@@ -8,7 +8,6 @@ const ADMIN_SECTIONS = [
   { id: 'overview', label: 'Visão geral' },
   { id: 'stock', label: 'Estoque' },
   { id: 'users', label: 'Usuários' },
-  { id: 'settings', label: 'Configurações' },
 ]
 
 export default function AdminPage() {
@@ -231,32 +230,6 @@ export default function AdminPage() {
       )
     }
 
-    if (activeSection === 'settings') {
-      return (
-        <>
-          <SectionTitle
-            eyebrow="Configurações"
-            title="Resumo da loja"
-            description="Informações principais carregadas do backend."
-          />
-          <div className="stats-grid">
-            <div className="stat">
-              <strong>{dashboard.settings.nome_loja}</strong>
-              <span>Loja</span>
-            </div>
-            <div className="stat">
-              <strong>{dashboard.settings.loja_aberta ? 'Aberta' : 'Fechada'}</strong>
-              <span>Status</span>
-            </div>
-            <div className="stat">
-              <strong>{dashboard.settings.taxa_entrega?.toFixed?.(2) || '0.00'}</strong>
-              <span>Taxa de entrega</span>
-            </div>
-          </div>
-        </>
-      )
-    }
-
     return (
       <>
         <SectionTitle
@@ -339,9 +312,6 @@ export default function AdminPage() {
           <aside className="panel admin-shell__nav">
             <div className="row row--space">
               <SectionTitle eyebrow="Admin" title="Painel" description="Sessão validada pelo backend." />
-              <button type="button" className="button button--ghost" onClick={logout}>
-                Sair
-              </button>
             </div>
             <div className="stack">
               {ADMIN_SECTIONS.map((section) => (

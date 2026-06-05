@@ -27,6 +27,17 @@ from .security import hash_password, verify_password
 logger = logging.getLogger(__name__)
 
 
+def repair_mojibake(value: str) -> str:
+    if not isinstance(value, str):
+        return value
+    if not any(marker in value for marker in ("Ã", "Â", "�")):
+        return value
+    try:
+        return value.encode("latin1").decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return value
+
+
 def get_user_by_email(db: Session, email: str) -> User | None:
     return db.scalar(select(User).where(User.email == email))
 
@@ -72,8 +83,23 @@ def get_or_create_settings(db: Session) -> StoreSettings:
 
 
 def list_active_products(db: Session) -> list[Product]:
-    products = list(db.scalars(select(Product).where(Product.active.is_(True))).all())
-    return [product for product in products if "Ã" not in product.name and "Â" not in product.name and "�" not in product.name]
+    products = list(db.scalars(select(Product).where(Product.active.is_(True)).order_by(Product.id)).all())
+    seen_names: set[str] = set()
+    unique_products: list[Product] = []
+
+    for product in products:
+        product.name = repair_mojibake(product.name).strip()
+        if product.description:
+            product.description = repair_mojibake(product.description)
+
+        normalized_name = product.name.casefold()
+        if normalized_name in seen_names:
+            continue
+
+        seen_names.add(normalized_name)
+        unique_products.append(product)
+
+    return unique_products
 
 
 def list_active_stock(db: Session) -> list[StockProduct]:

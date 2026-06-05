@@ -1,10 +1,29 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import SectionTitle from '../components/SectionTitle'
 import OrderTrackingPanel from '../components/OrderTrackingPanel'
 import { useCart } from '../contexts/CartContext'
 import { emitNotification } from '../utils/notifications'
+
+const COMPOSER_DRAFTS_KEY = 'waacai-composer-drafts'
+const COMPOSER_STAGED_ITEMS_KEY = 'waacai-composer-staged-items'
+
+function loadComposerDrafts() {
+  try {
+    return JSON.parse(localStorage.getItem(COMPOSER_DRAFTS_KEY) || '{}')
+  } catch {
+    return {}
+  }
+}
+
+function loadComposerStagedItems() {
+  try {
+    return JSON.parse(localStorage.getItem(COMPOSER_STAGED_ITEMS_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -17,10 +36,21 @@ export default function HomePage() {
   const [comboStep, setComboStep] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [message, setMessage] = useState('')
+  const [composerDrafts, setComposerDrafts] = useState(() => loadComposerDrafts())
+  const [stagedItems, setStagedItems] = useState(() => loadComposerStagedItems())
+  const suppressDraftPersistRef = useRef(false)
 
   useEffect(() => {
     api.get('/api/catalog').then(({ data }) => setCatalog(data)).finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem(COMPOSER_DRAFTS_KEY, JSON.stringify(composerDrafts))
+  }, [composerDrafts])
+
+  useEffect(() => {
+    localStorage.setItem(COMPOSER_STAGED_ITEMS_KEY, JSON.stringify(stagedItems))
+  }, [stagedItems])
 
   const complementCandidates = useMemo(() => catalog.stock.filter((item) => item.available_for_complement), [catalog.stock])
   const stockById = useMemo(() => new Map(catalog.stock.map((item) => [item.id, item])), [catalog.stock])
@@ -32,14 +62,105 @@ export default function HomePage() {
   const completedComboSelection = useMemo(() => [...comboParts[0], ...selectedComplementIds], [comboParts, selectedComplementIds])
   const selectedPaidComplements = isComboProduct ? completedComboSelection.slice(3) : selectedComplements.slice(3)
   const composerExtraTotal = selectedPaidComplements.reduce((sum, stockProduct) => sum + (stockProduct?.complement_extra_price || 0), 0)
+  const stagedItemsCount = stagedItems.length
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
-  function openComposer(product) {
-    setSelectedProduct(product)
+  function persistDraft(nextProduct, draft) {
+    if (!nextProduct) return
+    setComposerDrafts((current) => ({
+      ...current,
+      [String(nextProduct.id)]: draft,
+    }))
+  }
+
+  function clearDraft(productId) {
+    setComposerDrafts((current) => {
+      const next = { ...current }
+      delete next[String(productId)]
+      return next
+    })
+  }
+
+  function clearStagedItems() {
+    setStagedItems([])
+  }
+
+  function buildConfiguredItem() {
+    if (!selectedProduct) return null
+    const complements = selectedComplementIds
+      .map((id) => stockById.get(id))
+      .filter(Boolean)
+      .map((stockProduct) => ({
+        stock_product_id: stockProduct.id,
+        quantity_consumed: 1,
+        stock_product: stockProduct,
+      }))
+
+    if (isComboProduct) {
+      const comboPartsPayload = [comboParts[0], selectedComplementIds].map((part) =>
+        part
+          .map((id) => stockById.get(id))
+          .filter(Boolean)
+          .map((stockProduct) => ({
+            stock_product_id: stockProduct.id,
+            quantity_consumed: 1,
+            stock_product: stockProduct,
+          })),
+      )
+
+      return {
+        product: selectedProduct,
+        quantity: 1,
+        complements: [],
+        comboParts: comboPartsPayload,
+        isCombo: true,
+        configKey: `combo:${JSON.stringify(comboPartsPayload.map((part) => part.map((complement) => complement.stock_product_id)))}`,
+      }
+    }
+
+    return {
+      product: selectedProduct,
+      quantity,
+      complements,
+      comboParts: [],
+      isCombo: false,
+      configKey: JSON.stringify(complements.map((complement) => complement.stock_product_id)),
+    }
+  }
+
+  function stageCurrentItem() {
+    const configuredItem = buildConfiguredItem()
+    if (!configuredItem) return
+    suppressDraftPersistRef.current = true
+    setStagedItems((current) => [...current, configuredItem])
+    clearDraft(selectedProduct.id)
     setSelectedComplementIds([])
     setComboParts([[], []])
     setComboStep(0)
     setQuantity(1)
+    setMessage(`${selectedProduct.name} salvo para continuar montando.`)
+    emitNotification({
+      type: 'success',
+      title: 'Item salvo',
+      description: `${selectedProduct.name} foi guardado no rascunho do pedido.`,
+    })
+  }
+
+  function isCurrentItemBlank() {
+    if (!selectedProduct) return true
+    if (isComboProduct) {
+      return comboStep === 0 && comboParts[0].length === 0 && comboParts[1].length === 0 && selectedComplementIds.length === 0
+    }
+    return selectedComplementIds.length === 0 && quantity === 1
+  }
+
+  function openComposer(product) {
+    const draft = composerDrafts[String(product.id)]
+    setSelectedProduct(product)
+    setSelectedComplementIds(draft?.selectedComplementIds || [])
+    setComboParts(draft?.comboParts || [[], []])
+    setComboStep(draft?.comboStep ?? 0)
+    setQuantity(draft?.quantity || 1)
     setMessage('')
   }
 
@@ -51,10 +172,6 @@ export default function HomePage() {
 
   function closeComposer() {
     setSelectedProduct(null)
-    setSelectedComplementIds([])
-    setComboParts([[], []])
-    setComboStep(0)
-    setQuantity(1)
   }
 
   function startNextComboPart() {
@@ -66,52 +183,43 @@ export default function HomePage() {
 
   function addConfiguredProduct() {
     if (!selectedProduct) return
-    const complements = selectedComplementIds
-      .map((id) => stockById.get(id))
-      .filter(Boolean)
-      .map((stockProduct) => ({
-        stock_product_id: stockProduct.id,
-        quantity_consumed: 1,
-        stock_product: stockProduct,
-      }))
 
-    if (isComboProduct) {
-      const payloadParts = [comboParts[0], selectedComplementIds].map((part) =>
-        part
-          .map((id) => stockById.get(id))
-          .filter(Boolean)
-          .map((stockProduct) => ({
-            stock_product_id: stockProduct.id,
-            quantity_consumed: 1,
-            stock_product: stockProduct,
-          })),
-      )
-      if (comboStep === 0) {
-        startNextComboPart()
-        return
-      }
-      addItem(selectedProduct, [], 1, { isCombo: true, comboParts: payloadParts })
-      setMessage(`${selectedProduct.name} adicionado ao carrinho.`)
-      emitNotification({
-        type: 'success',
-        title: 'Combo adicionado',
-        description: `${selectedProduct.name} foi enviado para o carrinho.`,
+    const configuredItem = buildConfiguredItem()
+    if (!configuredItem) return
+
+    const itemsToAdd = stagedItems.length > 0 && isCurrentItemBlank() ? [...stagedItems] : [...stagedItems, configuredItem]
+    itemsToAdd.forEach((item) => {
+      addItem(item.product, item.complements, item.quantity, {
+        isCombo: item.isCombo,
+        comboParts: item.comboParts,
       })
-      closeComposer()
-      navigate('/cart')
-      return
-    }
+    })
 
-    addItem(selectedProduct, complements, quantity)
-    setMessage(`${selectedProduct.name} adicionado ao carrinho.`)
+    clearDraft(selectedProduct.id)
+    clearStagedItems()
+    setMessage(`${itemsToAdd.length} item(ns) adicionado(s) ao carrinho.`)
     emitNotification({
       type: 'success',
-      title: 'Item adicionado',
-      description: `${selectedProduct.name} foi enviado para o carrinho.`,
+      title: itemsToAdd.length > 1 ? 'Itens adicionados' : 'Item adicionado',
+      description: `${itemsToAdd.length} item(ns) foi(ram) enviado(s) para o carrinho.`,
     })
     closeComposer()
     navigate('/cart')
   }
+
+  useEffect(() => {
+    if (!selectedProduct) return
+    if (suppressDraftPersistRef.current) {
+      suppressDraftPersistRef.current = false
+      return
+    }
+    persistDraft(selectedProduct, {
+      selectedComplementIds,
+      comboParts,
+      comboStep,
+      quantity,
+    })
+  }, [selectedProduct, selectedComplementIds, comboParts, comboStep, quantity])
 
   if (loading) return <div className="panel">Carregando cardápio...</div>
 
@@ -188,6 +296,7 @@ export default function HomePage() {
                     <span className="chip">{selectedProduct.name}</span>
                     <span className="chip">Base R$ {selectedProduct.price.toFixed(2)}</span>
                     {isComboProduct ? <span className="chip">{comboStep + 1}/2</span> : null}
+                    {stagedItemsCount > 0 ? <span className="chip chip--selected">{stagedItemsCount} salvo(s)</span> : null}
                   </div>
                   <p className="muted">{selectedProduct.description || 'Monte o seu pedido com complementos e finalize no carrinho.'}</p>
                   <div className="stats-grid">
@@ -270,12 +379,34 @@ export default function HomePage() {
                     </span>
                     <strong>Extra estimado: R$ {(isComboProduct ? composerExtraTotal : composerExtraTotal * quantity).toFixed(2)}</strong>
                   </div>
+                  {stagedItems.length > 0 ? (
+                    <div className="stack composer-staged">
+                      <span className="muted">Itens já montados</span>
+                      <div className="chip-row wrap">
+                        {stagedItems.map((item, index) => (
+                          <span key={`${item.configKey}-${index}`} className="chip chip--success">
+                            {item.product.name} {item.isCombo ? '• combo' : `• ${item.quantity}x`}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                   <div className="row row--space">
-                    <button type="button" className="button button--ghost" onClick={closeComposer}>
+                    <button
+                      type="button"
+                      className="button button--ghost"
+                      onClick={() => {
+                        if (isComboProduct && comboStep === 0) {
+                          startNextComboPart()
+                          return
+                        }
+                        stageCurrentItem()
+                      }}
+                    >
                       Continuar escolhendo
                     </button>
                     <button type="button" className="button" onClick={addConfiguredProduct}>
-                      {isComboProduct ? (comboStep === 0 ? 'Próximo açaí' : 'Adicionar combo ao carrinho') : 'Adicionar ao carrinho'}
+                      {stagedItemsCount > 0 ? 'Adicionar tudo ao carrinho' : isComboProduct ? (comboStep === 0 ? 'Próximo açaí' : 'Adicionar combo ao carrinho') : 'Adicionar ao carrinho'}
                     </button>
                   </div>
                 </div>

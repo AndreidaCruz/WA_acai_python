@@ -273,7 +273,7 @@ input {
 }
 
 .card--compact {
-  padding: 0.9rem 1rem;
+  padding: 1rem;
 }
 
 .card__image-shell {
@@ -348,6 +348,10 @@ input {
 .stack {
   display: grid;
   gap: 0.8rem;
+}
+
+.stack--tight {
+  gap: 0.35rem;
 }
 
 .cart-list {
@@ -690,6 +694,61 @@ input[type='color'] {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   margin: 1rem 0;
+  gap: 0.8rem;
+}
+
+.tracking-summary {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.tracking-summary__main,
+.tracking-summary__total {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.tracking-summary__main strong,
+.tracking-summary__total strong {
+  line-height: 1.1;
+}
+
+.tracking-summary__main span,
+.tracking-summary__main small,
+.tracking-summary__total span {
+  line-height: 1.35;
+}
+
+.tracking-order-list {
+  gap: 0.9rem;
+}
+
+.tracking-order-item {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.tracking-order-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.tracking-order-item__title,
+.tracking-order-item__price,
+.tracking-order-item__group {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.tracking-order-item__price {
+  text-align: right;
+  justify-items: end;
+}
+
+.tracking-order-item__groups {
+  gap: 0.9rem;
 }
 
 .admin-shell {

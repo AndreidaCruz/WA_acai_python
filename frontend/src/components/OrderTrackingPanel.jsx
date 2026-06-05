@@ -3,6 +3,24 @@ import api from '../services/api'
 import SectionTitle from './SectionTitle'
 
 const ORDER_STEPS = ['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO', 'SAINDO_PARA_ENTREGA', 'FINALIZADO']
+const LAST_ORDER_CACHE_KEY = 'waacai-last-order-cache'
+
+function loadCachedOrder() {
+  try {
+    const raw = localStorage.getItem(LAST_ORDER_CACHE_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function saveCachedOrder(order) {
+  if (!order) {
+    localStorage.removeItem(LAST_ORDER_CACHE_KEY)
+    return
+  }
+  localStorage.setItem(LAST_ORDER_CACHE_KEY, JSON.stringify(order))
+}
 
 function groupOrderItemComplements(item) {
   const complements = item.complements || []
@@ -31,7 +49,7 @@ function groupOrderItemComplements(item) {
 
 export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title = 'Acompanhamento do pedido' }) {
   const [storedOrderNumber, setStoredOrderNumber] = useState(() => orderNumberProp || localStorage.getItem('waacai-last-order-number') || '')
-  const [order, setOrder] = useState(null)
+  const [order, setOrder] = useState(() => loadCachedOrder())
 
   const orderNumber = orderNumberProp || storedOrderNumber
 
@@ -50,8 +68,12 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
     try {
       const { data } = await api.get(`/api/orders/track/${orderNumber}`)
       setOrder(data)
+      saveCachedOrder(data)
     } catch {
-      setOrder(null)
+      const cachedOrder = loadCachedOrder()
+      if (cachedOrder?.number === orderNumber) {
+        setOrder(cachedOrder)
+      }
     }
   }
 
@@ -84,6 +106,7 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
             Atualizar agora
           </button>
         </div>
+        {loadCachedOrder() ? <p className="muted">Os detalhes do último pedido estão salvos localmente enquanto a atualização acontece.</p> : null}
       </section>
     )
   }
@@ -110,42 +133,40 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
         </div>
       </div>
 
-      <div className="card card--compact">
-        <div className="row row--space">
-          <div>
-            <strong>{currentOrder.customer_name}</strong>
-            <p className="muted">{currentOrder.phone}</p>
-            <small>{currentOrder.address}</small>
-          </div>
-          <div className="stack stack--tight">
-            <strong>R$ {currentOrder.total.toFixed(2)}</strong>
-            <span className="muted">Total do pedido</span>
-          </div>
+      <div className="card card--compact tracking-summary">
+        <div className="tracking-summary__main">
+          <strong>{currentOrder.customer_name}</strong>
+          <span className="muted">{currentOrder.phone}</span>
+          <small>{currentOrder.address}</small>
+        </div>
+        <div className="tracking-summary__total">
+          <strong>R$ {currentOrder.total.toFixed(2)}</strong>
+          <span className="muted">Total do pedido</span>
         </div>
         {currentOrder.observations ? <p className="muted">Observações: {currentOrder.observations}</p> : null}
       </div>
 
-      <div className="stack">
+      <div className="stack tracking-order-list">
         {(currentOrder.items || []).map((item) => {
           const complementGroups = groupOrderItemComplements(item)
 
           return (
-            <article key={item.id} className="card card--compact">
-              <div className="row row--space">
-                <div>
+            <article key={item.id} className="card card--compact tracking-order-item">
+              <div className="tracking-order-item__header">
+                <div className="tracking-order-item__title">
                   <strong>{item.product_name}</strong>
                   <p className="muted">Qtd: {item.quantity}</p>
                 </div>
-                <div className="stack stack--tight">
+                <div className="tracking-order-item__price">
                   <strong>R$ {item.total_price.toFixed(2)}</strong>
                   <span className="muted">R$ {item.unit_price.toFixed(2)} cada</span>
                 </div>
               </div>
 
               {complementGroups.length > 0 ? (
-                <div className="stack">
+                <div className="stack tracking-order-item__groups">
                   {complementGroups.map((group) => (
-                    <div key={`${item.id}-${group.label}`} className="stack">
+                    <div key={`${item.id}-${group.label}`} className="stack tracking-order-item__group">
                       <span className="muted">{group.label}</span>
                       <div className="chip-row wrap">
                         {group.items.map((complement) => {

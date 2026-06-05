@@ -3,15 +3,34 @@ import { Link } from 'react-router-dom'
 import api from '../services/api'
 import SectionTitle from '../components/SectionTitle'
 import { useCart } from '../contexts/CartContext'
-import { emitNotification } from '../utils/notifications'
+import { emitNotification, getErrorMessage } from '../utils/notifications'
+
+const LAST_ORDER_CACHE_KEY = 'waacai-last-order-cache'
+
+function loadCachedOrder() {
+  try {
+    const raw = localStorage.getItem(LAST_ORDER_CACHE_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function saveCachedOrder(order) {
+  if (!order) {
+    localStorage.removeItem(LAST_ORDER_CACHE_KEY)
+    return
+  }
+  localStorage.setItem(LAST_ORDER_CACHE_KEY, JSON.stringify(order))
+}
 
 export default function CartPage() {
   const { items, total, removeItem, clear } = useCart()
   const [customer, setCustomer] = useState({ customer_name: '', phone: '', address: '', observations: '' })
   const [message, setMessage] = useState('')
-  const [lastOrder, setLastOrder] = useState(null)
+  const [lastOrder, setLastOrder] = useState(() => loadCachedOrder())
   const [lastOrderNumber, setLastOrderNumber] = useState(() => localStorage.getItem('waacai-last-order-number') || '')
-  const [tracking, setTracking] = useState(null)
+  const [tracking, setTracking] = useState(() => loadCachedOrder())
   const [settings, setSettings] = useState({ taxa_entrega: 0 })
   const orderSteps = ['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO', 'SAINDO_PARA_ENTREGA', 'FINALIZADO']
 
@@ -54,8 +73,12 @@ export default function CartPage() {
     try {
       const { data } = await api.get(`/api/orders/track/${lastOrderNumber}`)
       setTracking(data)
+      saveCachedOrder(data)
     } catch {
-      setTracking(null)
+      const cachedOrder = loadCachedOrder()
+      if (cachedOrder?.number === lastOrderNumber) {
+        setTracking(cachedOrder)
+      }
     }
   }
 
@@ -96,6 +119,7 @@ export default function CartPage() {
       })
       return
     }
+
     try {
       const payload = {
         customer_name: customer.customer_name.trim(),
@@ -126,6 +150,7 @@ export default function CartPage() {
       setLastOrder(data)
       setLastOrderNumber(data.number)
       localStorage.setItem('waacai-last-order-number', data.number)
+      saveCachedOrder(data)
       setMessage(`Pedido criado com sucesso: ${data.number}`)
       emitNotification({
         type: 'success',
@@ -133,8 +158,14 @@ export default function CartPage() {
         description: `Pedido ${data.number} foi criado com sucesso.`,
       })
       clear()
-    } catch {
-      setMessage('Não foi possível finalizar o pedido.')
+    } catch (error) {
+      const description = getErrorMessage(error)
+      setMessage(description)
+      emitNotification({
+        type: 'error',
+        title: 'Pedido não concluído',
+        description,
+      })
     }
   }
 
@@ -160,8 +191,8 @@ export default function CartPage() {
       <section className="panel">
         {items.length === 0 ? <p className="muted">Nenhum item adicionado ainda.</p> : null}
         <div className="cart-list">
-          {items.map((item) => (
-            <article key={item.configKey} className="cart-item">
+          {items.map((item, index) => (
+            <article key={item.lineId || item.configKey || `${item.product.id}-${index}`} className="cart-item">
               <div className="stack">
                 <div>
                   <h4>{item.product.name}</h4>
@@ -195,7 +226,11 @@ export default function CartPage() {
                   </div>
                 )}
               </div>
-              <button type="button" className="button button--ghost" onClick={() => removeItem(item.configKey)}>
+              <button
+                type="button"
+                className="button button--ghost"
+                onClick={() => removeItem(item.lineId || item.configKey || item.product.id)}
+              >
                 Remover
               </button>
             </article>
@@ -279,42 +314,40 @@ export default function CartPage() {
             </div>
           </div>
 
-          <div className="card card--compact">
-            <div className="row row--space">
-              <div>
-                <strong>{currentOrder.customer_name}</strong>
-                <p className="muted">{currentOrder.phone}</p>
-                <small>{currentOrder.address}</small>
-              </div>
-              <div className="stack stack--tight">
-                <strong>R$ {currentOrder.total.toFixed(2)}</strong>
-                <span className="muted">Total do pedido</span>
-              </div>
+          <div className="card card--compact tracking-summary">
+            <div className="tracking-summary__main">
+              <strong>{currentOrder.customer_name}</strong>
+              <span className="muted">{currentOrder.phone}</span>
+              <small>{currentOrder.address}</small>
+            </div>
+            <div className="tracking-summary__total">
+              <strong>R$ {currentOrder.total.toFixed(2)}</strong>
+              <span className="muted">Total do pedido</span>
             </div>
             {currentOrder.observations ? <p className="muted">Observações: {currentOrder.observations}</p> : null}
           </div>
 
-          <div className="stack">
+          <div className="stack tracking-order-list">
             {(currentOrder.items || []).map((item) => {
               const complementGroups = groupOrderItemComplements(item)
 
               return (
-                <article key={item.id} className="card card--compact">
-                  <div className="row row--space">
-                    <div>
+                <article key={item.id} className="card card--compact tracking-order-item">
+                  <div className="tracking-order-item__header">
+                    <div className="tracking-order-item__title">
                       <strong>{item.product_name}</strong>
                       <p className="muted">Qtd: {item.quantity}</p>
                     </div>
-                    <div className="stack stack--tight">
+                    <div className="tracking-order-item__price">
                       <strong>R$ {item.total_price.toFixed(2)}</strong>
                       <span className="muted">R$ {item.unit_price.toFixed(2)} cada</span>
                     </div>
                   </div>
 
                   {complementGroups.length > 0 ? (
-                    <div className="stack">
+                    <div className="stack tracking-order-item__groups">
                       {complementGroups.map((group) => (
-                        <div key={`${item.id}-${group.label}`} className="stack">
+                        <div key={`${item.id}-${group.label}`} className="stack tracking-order-item__group">
                           <span className="muted">{group.label}</span>
                           <div className="chip-row wrap">
                             {group.items.map((complement) => {

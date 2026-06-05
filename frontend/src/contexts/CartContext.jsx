@@ -3,10 +3,21 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 const CartContext = createContext(null)
 const STORAGE_KEY = 'waacai-cart'
 
+function createLineId() {
+  if (globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+}
+
 export function CartProvider({ children }) {
   const [items, setItems] = useState(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : []
+    const parsed = stored ? JSON.parse(stored) : []
+    return parsed.map((item) => ({
+      ...item,
+      lineId: item.lineId || createLineId(),
+    }))
   })
 
   useEffect(() => {
@@ -29,25 +40,18 @@ export function CartProvider({ children }) {
     const configKey = options.isCombo
       ? `combo:${JSON.stringify(normalizedComboParts.map((part) => part.map((complement) => complement.stock_product_id)))}`
       : JSON.stringify(normalizedComplements.map((complement) => complement.stock_product_id))
-    setItems((current) => {
-      const found = current.find((item) => item.product.id === product.id && item.configKey === configKey)
-      if (found) {
-        return current.map((item) =>
-          item.product.id === product.id && item.configKey === configKey ? { ...item, quantity: item.quantity + quantity } : item,
-        )
-      }
-      return [
-        ...current,
-        {
-          product,
-          quantity,
-          complements: normalizedComplements,
-          comboParts: normalizedComboParts,
-          isCombo: Boolean(options.isCombo),
-          configKey,
-        },
-      ]
-    })
+    setItems((current) => [
+      ...current,
+      {
+        lineId: createLineId(),
+        product,
+        quantity,
+        complements: normalizedComplements,
+        comboParts: normalizedComboParts,
+        isCombo: Boolean(options.isCombo),
+        configKey,
+      },
+    ])
   }
 
   function setComplement(productId, stockProduct, enabled) {
@@ -70,7 +74,7 @@ export function CartProvider({ children }) {
   }
 
   function removeItem(itemKey) {
-    setItems((current) => current.filter((item) => item.configKey !== itemKey && item.product.id !== itemKey))
+    setItems((current) => current.filter((item) => item.lineId !== itemKey && item.configKey !== itemKey && item.product.id !== itemKey))
   }
 
   function clear() {
