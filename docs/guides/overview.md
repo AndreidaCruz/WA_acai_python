@@ -1,13 +1,13 @@
-# Guides
+# Guias
 
-Practical guides and playbooks for using or operating the project.
+Esta pasta guarda guias práticos e playbooks para tarefas recorrentes.
 
-## Use
+## Uso
 
-- explain how to do a task;
-- document recurring workflows;
-- keep examples close to real usage.
+- registrar passos operacionais;
+- explicar fluxos de trabalho;
+- manter o conteúdo prático e curto.
 
-## Related
+## Relacionados
 
 - [../overview.md](../overview.md)

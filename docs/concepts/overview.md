@@ -1,13 +1,13 @@
-# Concepts
+# Conceitos
 
-Concepts and evolution models live here.
+Esta pasta reúne conceitos, modelos de evolução e explicações de apoio.
 
-## Use
+## Uso
 
-- document ideas that explain the system or its growth;
-- keep conceptual material separate from official contract;
-- promote to `.spec` only when a concept becomes a stable rule.
+- explicar ideias e padrões;
+- registrar evolução conceitual;
+- não substituir contrato normativo.
 
-## Related
+## Relacionados
 
 - [../overview.md](../overview.md)

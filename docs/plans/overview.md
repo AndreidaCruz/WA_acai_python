@@ -1,20 +1,20 @@
-# Plans
+# Planos
 
-This folder stores migration notes, phases, future work, roadmaps, and execution checklists.
+Esta pasta guarda notas de migração, fases, trabalho futuro, roadmaps e listas de execução.
 
-## Index
+## Índice
 
-- [roadmap.md](./roadmap.md): phased implementation plan for the current WA Açaí contract;
-- [todo.md](./todo.md): immediate and near-term checklist for the next build steps.
+- [roadmap.md](./roadmap.md): plano de implementação por fases para o contrato atual do WA Açaí;
+- [todo.md](./todo.md): checklist imediata e de curto prazo para os próximos passos da construção.
 
-## Use
+## Uso
 
-- record intended work;
-- describe upgrade or organization steps;
-- keep plans separate from contracts and live state;
-- link each plan back to the current spec and stat when it affects implementation.
+- registre o trabalho pretendido;
+- descreva passos de upgrade ou organização;
+- mantenha os planos separados dos contratos e do estado vivo;
+- relacione cada plano com a spec e a stat atuais quando ele afetar a implementação.
 
-## Related
+## Relacionados
 
 - [../overview.md](../overview.md)
 - [../../agent/specs/wa-acai.spec.md](../../agent/specs/wa-acai.spec.md)

@@ -1,13 +1,13 @@
-# Reports
+# Relatórios
 
-Evidence, audits, and validation outputs worth keeping organized.
+Evidências, auditorias e saídas de validação que valem a pena manter organizadas.
 
-## Use
+## Uso
 
-- store short reports;
-- keep validation evidence accessible;
-- avoid turning reports into durable contracts.
+- armazenar relatórios curtos;
+- manter evidências de validação acessíveis;
+- evitar transformar relatórios em contratos duráveis.
 
-## Related
+## Relacionados
 
 - [../overview.md](../overview.md)

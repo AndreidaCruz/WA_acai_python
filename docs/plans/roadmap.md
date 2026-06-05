@@ -1,25 +1,25 @@
-# WA Açaí Roadmap
+# Roadmap WA Açaí
 
-This roadmap turns the current WA Açaí contract into an implementation sequence.
+Este roadmap transforma o contrato atual do WA Açaí em uma sequência de implementação.
 
-## Goal
+## Objetivo
 
-Build a functional MVP with a clean architecture, room for growth, and a clear separation between storefront, account, admin, and inventory concerns.
+Construir um MVP funcional com arquitetura limpa, espaço para crescimento e separação clara entre vitrine, conta, admin e estoque.
 
-## Phases
+## Fases
 
-1. foundation
-2. backend domain model
-3. authentication and accounts
-4. UI shell and role-aware navigation
-5. catalog and cart
-6. orders and delivery flow
-7. inventory and recipes
-8. admin panels and dashboards
-9. realtime updates
-10. PWA and polish
+1. base inicial
+2. modelo de domínio do backend
+3. autenticação e contas
+4. shell da UI e navegação por perfil
+5. cardápio e carrinho
+6. pedidos e fluxo de entrega
+7. estoque e receitas
+8. painéis e dashboards admin
+9. atualizações em tempo real
+10. PWA e polimento
 
-## Domain coverage
+## Cobertura de domínios
 
 - [architecture](../../agent/specs/architecture.spec.md)
 - [authentication](../../agent/specs/authentication.spec.md)
@@ -35,18 +35,18 @@ Build a functional MVP with a clean architecture, room for growth, and a clear s
 - [security](../../agent/specs/security.spec.md)
 - [admin](../../agent/specs/admin.spec.md)
 
-## Phase notes
+## Notas por fase
 
-- foundation: set up folder structure, settings, database, and shared conventions;
-- backend domain model: create users, products, stock products, recipes, orders, movements, and settings;
-- authentication and accounts: implement register, login, logout, session handling, and guest-to-account linking;
-- UI shell and role-aware navigation: separate guest, authenticated user, cart, and admin entry points;
-- catalog and cart: render the public storefront, product composer, and local cart state;
-- orders and delivery flow: support confirmation, order numbers, status transitions, and guest data;
-- inventory and recipes: validate and deduct stock from stored technical recipes;
-- admin panels and dashboards: expose product, stock, order, customer, and operational views;
-- realtime updates: add WebSocket channels for relevant events;
-- PWA and polish: add offline basics, manifest, installability, and mobile-first finishing.
+- base inicial: preparar a estrutura de pastas, configurações, banco e convenções compartilhadas;
+- modelo de domínio do backend: criar usuários, produtos, itens de estoque, receitas, pedidos, movimentações e configurações;
+- autenticação e contas: implementar cadastro, login, logout, sessão e vínculo de convidado com conta;
+- shell da UI e navegação por perfil: separar os pontos de entrada de convidado, usuário autenticado, carrinho e admin;
+- cardápio e carrinho: renderizar a vitrine pública, o compositor de produto e o estado local do carrinho;
+- pedidos e fluxo de entrega: suportar confirmação, número de pedido, transições de status e dados de convidado;
+- estoque e receitas: validar e dar baixa no estoque a partir das receitas técnicas armazenadas;
+- painéis e dashboards admin: expor visões de produto, estoque, pedidos, clientes e operação;
+- atualizações em tempo real: adicionar canais WebSocket para eventos relevantes;
+- PWA e polimento: adicionar noções básicas de offline, manifesto, instalabilidade e acabamento mobile-first.
 
 ## Links
 

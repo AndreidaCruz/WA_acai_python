@@ -1,8 +1,8 @@
-# Agent Workspace
+# Workspace do Agente
 
-This directory concentrates the agent's working material without polluting the repository root.
+Esta pasta concentra o material de trabalho do agente sem poluir a raiz do repositório.
 
-## Useful entry points
+## Entradas úteis
 
 - [../project.overview.md](../project.overview.md)
 - [../project.update.md](../project.update.md)
@@ -11,46 +11,46 @@ This directory concentrates the agent's working material without polluting the r
 - [specs/overview.md](./specs/overview.md)
 - [../docs/overview.md](../docs/overview.md)
 
-## Structure
+## Estrutura
 
 - `policy/`
-  - durable rules for agent work;
-  - workflow, contract, documentation, and safety conventions.
+  - regras duráveis para o trabalho do agente;
+  - convenções de workflow, contrato, documentação e segurança.
 - `specs/`
-  - normative specifications;
-  - progress status;
-  - `.spec` / `.stat` pairs.
+  - especificações normativas;
+  - estado de progresso;
+  - pares `.spec` / `.stat`.
 - `prints/`
-  - screenshots;
-  - temporary support images;
-  - visual comparisons.
+  - capturas de tela;
+  - imagens temporárias de apoio;
+  - comparações visuais.
 - `tmp/`
-  - test prints;
-  - temporary captures;
-  - disposable artifacts.
+  - prints de teste;
+  - capturas temporárias;
+  - artefatos descartáveis.
 - `reports/`
-  - short validation reports;
-  - audit summaries;
-  - outputs worth keeping organized.
+  - relatórios curtos de validação;
+  - resumos de auditoria;
+  - saídas que valem a pena manter organizadas.
 - `scripts/`
-  - helper scripts and small automations;
-  - test utilities.
+  - scripts auxiliares e pequenas automações;
+  - utilitários de teste.
 - `test/`
-  - small tests and support checks;
-  - validation drafts.
+  - testes pequenos e verificações de apoio;
+  - rascunhos de validação.
 - `note/`
-  - more private agent notes;
-  - reasoning drafts;
-  - context observations.
+  - notas mais privadas do agente;
+  - rascunhos de raciocínio;
+  - observações de contexto.
 
-## Rules
+## Regras
 
-- keep the rest of the repository clean;
-- do not use the root for prints and drafts;
-- promote to official documentation only what is stable;
-- do not store secrets, tokens, dumps, or sensitive data without an explicit reason.
+- mantenha o restante do repositório limpo;
+- não use a raiz para prints e rascunhos;
+- promova para documentação oficial apenas o que estiver estável;
+- não armazene segredos, tokens, dumps ou dados sensíveis sem motivo explícito.
 
-## Related
+## Relacionados
 
 - [../agent-start-here.md](../agent-start-here.md)
 - [../docs/overview.md](../docs/overview.md)

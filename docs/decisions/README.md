@@ -1,13 +1,13 @@
-# Decisions
+# Decisões
 
-Approved and closed decisions.
+Esta pasta registra decisões aprovadas, fechadas ou com efeito durável.
 
-## Use
+## Uso
 
-- use to record already consolidated choices;
-- when the decision changes the contract, update `agent/specs/` and `agent/specs/project.stat.md`.
+- guardar decisões já tomadas;
+- evitar discussão solta aqui;
+- manter o histórico de mudança compreensível.
 
-## Related
+## Relacionados
 
 - [../README.md](../README.md)
-- [../../agent/specs/README.md](../../agent/specs/README.md)

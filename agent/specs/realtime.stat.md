@@ -1,29 +1,29 @@
-# Realtime Stat
+# Estatuto de Tempo Real
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- realtime communication is split out as a dedicated contract.
+- a comunicação em tempo real foi separada como contrato dedicado.
 
-## Pending items
+## Pendências
 
-- define WebSocket channels and event payloads;
-- connect order and inventory events to dashboard updates.
+- definir os canais de WebSocket e os payloads dos eventos;
+- conectar os eventos de pedidos e estoque às atualizações de painel.
 
-## Evidence / validation
+## Evidências / validação
 
-- realtime contract documented independently.
+- o contrato de tempo real está documentado de forma independente.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-realtime-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: realtime contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de tempo real separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [realtime.spec](realtime.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

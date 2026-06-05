@@ -1,13 +1,14 @@
-# Contracts
+# Contratos
 
-Human contracts that explain what the system does without replacing the spec.
+Esta pasta reúne documentos explicativos sobre contratos, sem substituir as specs.
 
-## Use
+## Uso
 
-- use for contract guides, domain vision, and supporting explanations;
-- when the rule needs to be durable, migrate it to `agent/specs/`.
+- esclarecer intenção e interpretação;
+- apoiar leitura humana;
+- não redefinir regra durável aqui.
 
-## Related
+## Relacionados
 
 - [../README.md](../README.md)
 - [../../agent/specs/README.md](../../agent/specs/README.md)

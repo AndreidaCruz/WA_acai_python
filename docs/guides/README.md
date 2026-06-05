@@ -1,13 +1,13 @@
-# Guides
+# Guias
 
-Practical guides and operational playbooks.
+Esta pasta guarda guias práticos e playbooks para tarefas recorrentes.
 
-## Use
+## Uso
 
-- use for usage instructions and operational sequences;
-- when the instruction becomes a permanent rule, migrate it to `agent/policy/`.
+- registrar passos operacionais;
+- explicar fluxos de trabalho;
+- manter o conteúdo prático e curto.
 
-## Related
+## Relacionados
 
 - [../README.md](../README.md)
-- [../../agent/policy/README.md](../../agent/policy/README.md)

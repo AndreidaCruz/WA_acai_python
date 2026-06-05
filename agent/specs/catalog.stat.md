@@ -1,29 +1,29 @@
-# Catalog Stat
+# Estatuto do Cardápio
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- catalog behavior is split out from the product umbrella.
+- o comportamento do cardápio foi separado do guarda-chuva do produto.
 
-## Pending items
+## Pendências
 
-- implement backend-driven catalog rendering;
-- wire cart interactions to the future order flow.
+- implementar a renderização do cardápio guiada pelo backend;
+- ligar as interações do carrinho ao fluxo de pedidos futuro.
 
-## Evidence / validation
+## Evidências / validação
 
-- storefront scope isolated for implementation.
+- o escopo da vitrine foi isolado para implementação.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-catalog-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: catalog contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de cardápio separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [catalog.spec](catalog.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

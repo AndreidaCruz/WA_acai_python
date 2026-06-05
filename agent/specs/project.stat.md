@@ -1,76 +1,77 @@
-# Project Stat
+# Stat do Projeto
 
-Last update date: 2026-06-02
+Data da última atualização: 2026-06-02
 
-## Current state
+## Estado atual
 
-- initial convention created;
-- base structure available;
-- real domains can still be separated into their own specs;
-- WA Açaí is now the defined product domain for the repository;
-- the standard update flow is installed with `project.update.md` and `project.migrations.md`;
-- the project and folder overview entry points are aligned to the standard convention;
-- the product implementation was reset to prepare for the new delivery-style scope;
-- the WA Açaí domain now has a richer spec/stat/linkage set and a roadmap entry point;
-- the new implementation base is now bootstrapped and smoke-tested;
-- the backend now lives under `backend/src`;
-- the first-run admin setup flow is implemented and smoke-tested;
-- application logging is centralized and debug runs write to `logs/wa-acai.log`;
-- the launcher now passes `--debug` to the backend entrypoint.
-- a dedicated UI shell contract now defines role-aware navigation, cart entry, and admin visibility.
-- toast alerts now surface important validation and action feedback in the shell.
+- a convenção inicial foi criada;
+- a estrutura base está disponível;
+- os domínios reais ainda podem ser separados em specs próprias;
+- WA Açaí agora está definido como o domínio de produto do repositório;
+- o fluxo padrão de atualização está instalado com `project.update.md` e `project.migrations.md`;
+- os pontos de entrada de visão geral do projeto e de pasta estão alinhados à convenção padrão;
+- a implementação do produto foi resetada para preparar o novo escopo estilo delivery;
+- o domínio WA Açaí agora tem um conjunto mais rico de spec/stat/linkagem e um ponto de entrada de roadmap;
+- a nova base de implementação foi bootstrapada e validada por smoke test;
+- o backend agora vive em `backend/src`;
+- o fluxo de setup inicial do primeiro admin está implementado e validado por smoke test;
+- o logging da aplicação é centralizado e execuções em debug gravam em `logs/wa-acai.log`;
+- o launcher agora passa `--debug` para o ponto de entrada do backend;
+- um contrato dedicado de shell de UI agora define navegação por perfil, entrada para carrinho e visibilidade de admin;
+- os toasts de alerta agora exibem feedback importante de validação e ações no shell.
 
-## Pending items
+## Pendências
 
-- define real domain specs when the target project matures;
-- adjust operational documentation as concrete usage appears;
-- align the WA Açaí implementation with the new delivery-style scope;
-- consolidate the adequation roadmap in the new update flow;
-- keep the new roadmap and TODO synchronized with the spec and stat;
-- keep implementation progress synchronized with the domain stats;
-- keep the backend `src` layout and the one-time setup flow stable;
-- keep logging safe, centralized, and free of secrets.
-- keep the UI shell aligned with backend role validation.
-- keep toast alerts reusable and consistent across the shell.
+- definir specs reais de domínio quando o projeto alvo amadurecer;
+- ajustar a documentação operacional conforme o uso concreto aparecer;
+- alinhar a implementação do WA Açaí ao novo escopo estilo delivery;
+- consolidar o roadmap de adequação no novo fluxo de atualização;
+- manter o roadmap e o TODO sincronizados com a spec e a stat;
+- manter o progresso da implementação sincronizado com as stats de domínio;
+- manter o layout `src` do backend e o fluxo de setup único estáveis;
+- manter o logging seguro, centralizado e sem segredos;
+- manter o shell de UI alinhado com a validação de perfil do backend;
+- manter os toasts reutilizáveis e consistentes em todo o shell.
 
-## Evidence / validation
+## Evidências / validação
 
-- initial template created;
-- workspace structure defined;
-- `.spec` and `.stat` convention established;
-- WA Açaí scope documented in `wa-acai.spec.md`;
-- convention update flow and overview files added for the current bootstrap;
-- previous prototype implementation removed from backend and frontend;
-- the next implementation plan is now being captured in `docs/plans/`;
-- backend and frontend base restored and smoke-tested;
-- backend moved to `backend/src` and the one-time admin setup flow verified;
-- backend logging was centralized and validated in debug mode.
-- UI shell contract was created to remove guest/admin ambiguity from the navigation layer.
-- toast notifications were added for important shell actions and validation errors.
+- o template inicial foi criado;
+- a estrutura do workspace foi definida;
+- a convenção `.spec` e `.stat` foi estabelecida;
+- o escopo WA Açaí foi documentado em `wa-acai.spec.md`;
+- o fluxo de atualização da convenção e os arquivos de visão geral foram adicionados para o bootstrap atual;
+- a implementação anterior do protótipo foi removida do backend e do frontend;
+- o próximo plano de implementação está sendo registrado em `docs/plans/`;
+- a base do backend e do frontend foi restaurada e validada por smoke test;
+- o backend foi movido para `backend/src` e o fluxo de setup inicial do admin foi verificado;
+- o logging do backend foi centralizado e validado em modo debug;
+- o contrato de shell de UI foi criado para eliminar ambiguidades entre guest e admin;
+- toasts foram adicionados para ações importantes do shell e erros de validação;
+- usuários admin já podem ser listados e promovidos pelo shell, e ações de status de pedido estão sendo expostas no board operacional.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260602-ui-shell-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: project implementation base extended with centralized logging, debug file output, launcher integration, and a dedicated UI shell contract.
+- status do commit: não feito
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: base de implementação do projeto ampliada com logging centralizado, debug em arquivo e contrato dedicado de shell de UI.
 
-## Recommended next step
+## Próximo passo recomendado
 
-- replace or split this foundational spec when the project's domains are clear.
+- substituir ou dividir esta spec fundacional quando os domínios do projeto estiverem claros.
 
-## Open risks or doubts
+## Riscos ou dúvidas abertas
 
-- this spec is only a starting point;
-- it should not absorb independent domains for convenience.
+- esta spec é apenas um ponto de partida;
+- ela não deve absorver domínios independentes por conveniência.
 
-## Core rule
+## Regra central
 
-- `.stat` records state, pending items, validation, and next steps.
-- `.stat` does not redefine contract.
+- `.stat` registra estado, pendências, validação e próximos passos.
+- `.stat` não redefine contrato.
 
-## Related
+## Relacionados
 
 - [project.spec](project.spec.md)
 - [wa-acai.spec](wa-acai.spec.md)

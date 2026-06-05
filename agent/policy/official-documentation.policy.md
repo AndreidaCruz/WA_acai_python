@@ -1,12 +1,12 @@
-# Official Documentation Policy
+# Política de Documentação Oficial
 
-- official documentation includes README, docs, runbooks, API docs, guides, and policies;
-- official docs must reflect real behavior;
-- if code and docs diverge, that is an inconsistency;
-- official docs do not receive raw logs, validation prints, test screenshots, private notes, or temporary evidence;
-- review the official documentation when behavior, command, configuration, integration, or usage changes.
+- documentação oficial inclui README, docs, runbooks, docs de API, guias e políticas;
+- documentos oficiais precisam refletir o comportamento real;
+- se código e documentação divergirem, isso é uma inconsistência;
+- documentação oficial não recebe logs brutos, prints de validação, screenshots de teste, notas privadas ou evidências temporárias;
+- revise a documentação oficial quando comportamento, comando, configuração, integração ou uso mudarem.
 
-## Related
+## Relacionados
 
 - [../specs/README.md](../specs/README.md)
 - [../specs/project.spec.md](../specs/project.spec.md)

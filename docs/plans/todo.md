@@ -1,32 +1,32 @@
 # WA Açaí TODO
 
-This TODO keeps the next implementation steps visible while the new contract is being built.
+Esta lista mantém visíveis os próximos passos de implementação enquanto o novo contrato é construído.
 
-## Immediate
+## Imediato
 
-- finish the role-aware UI shell and make admin/customer navigation unambiguous;
-- complete the operational orders board with status updates and refresh actions;
-- complete customer user listing and promotion-to-admin controls;
-- keep toast notifications consistent across login, admin, checkout, and order flows.
+- finalizar o shell da UI por perfil e deixar a navegação de admin/cliente inequívoca;
+- completar o board operacional de pedidos com atualização de status e ações de refresh;
+- completar a listagem de usuários clientes e os controles de promoção para admin;
+- manter os toasts consistentes em login, admin, checkout e fluxos de pedido.
 
-## Domain priorities
+## Prioridades por domínio
 
-- architecture first: backend and frontend boundaries;
-- security second: authentication and access control;
-- data third: accounts, catalog, orders, and inventory;
-- operations fourth: settings, media, realtime, admin, and PWA.
+- arquitetura em primeiro lugar: limites entre backend e frontend;
+- segurança em segundo: autenticação e controle de acesso;
+- dados em terceiro: contas, cardápio, pedidos e estoque;
+- operações em quarto: configurações, mídia, realtime, admin e PWA.
 
-## Next
+## Próximos
 
-- keep refining the catalog-to-cart composer flow so the user does not need long scrolling;
-- keep admin sections split by responsibility instead of bundling every action into one page;
-- extend tracking so the cart and order history stay aligned after checkout.
+- continuar refinando o fluxo do cardápio para o carrinho para evitar rolagem longa;
+- manter as seções de admin separadas por responsabilidade em vez de juntar tudo em uma página;
+- ampliar o tracking para que carrinho e histórico de pedidos permaneçam alinhados após o checkout.
 
-## Later
+## Depois
 
-- add richer movement history views for inventory auditing;
-- add WebSocket channels for live order and dashboard updates;
-- add PWA metadata and offline support.
+- adicionar visões mais ricas do histórico de movimentações para auditoria de estoque;
+- adicionar canais WebSocket para pedidos ao vivo e atualizações do dashboard;
+- adicionar metadados de PWA e suporte offline.
 
 ## Links
 

@@ -1,14 +1,14 @@
-# Policies
+# Políticas
 
-Human-facing documentation for governance and usage.
+Documentação voltada para pessoas sobre governança e uso.
 
-## Use
+## Uso
 
-- explain how the project is operated;
-- summarize norms that support the agent policies;
-- keep this folder separate from the durable rules in `agent/policy/`.
+- explicar como o projeto é operado;
+- resumir normas que apoiam as políticas do agente;
+- manter esta pasta separada das regras duráveis em `agent/policy/`.
 
-## Related
+## Relacionados
 
 - [../overview.md](../overview.md)
 - [../../agent/policy/overview.md](../../agent/policy/overview.md)

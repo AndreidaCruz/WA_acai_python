@@ -1,30 +1,30 @@
-# Architecture Stat
+# Estatuto de Arquitetura
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- the architecture contract is being split out from the product umbrella;
-- modular backend and feature-based frontend boundaries are now explicit.
+- o contrato de arquitetura está sendo separado do guarda-chuva do produto;
+- os limites de backend modular e frontend orientado por funcionalidades já estão explícitos.
 
-## Pending items
+## Pendências
 
-- implement the codebase around the modular structure;
-- keep domain rules out of route handlers when a service can own them.
+- implementar o código-base seguindo a estrutura modular;
+- manter regras de domínio fora dos route handlers quando um service puder ser o dono.
 
-## Evidence / validation
+## Evidências / validação
 
-- architecture boundaries documented for both backend and frontend.
+- as fronteiras de arquitetura estão documentadas para backend e frontend.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-architecture-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: architecture contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de arquitetura separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [architecture.spec](architecture.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

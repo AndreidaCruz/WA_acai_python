@@ -1,29 +1,29 @@
-# Orders Stat
+# Estatuto de Pedidos
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- order lifecycle behavior is split out from the product umbrella.
+- o comportamento do ciclo de vida do pedido foi separado do guarda-chuva do produto.
 
-## Pending items
+## Pendências
 
-- define the implementation status machine in code;
-- connect order creation to customer and inventory domains.
+- definir a máquina de estados de implementação no código;
+- conectar a criação de pedidos aos domínios de cliente e estoque.
 
-## Evidence / validation
+## Evidências / validação
 
-- order contract documented independently.
+- o contrato de pedidos está documentado de forma independente.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-orders-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: orders contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de pedidos separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [orders.spec](orders.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

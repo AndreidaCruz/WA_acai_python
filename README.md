@@ -1,17 +1,17 @@
 # WA Açaí
 
-WA Açaí is being rebuilt as a delivery-style PWA for catalog browsing, guest ordering, authenticated accounts, and admin stock control.
+O WA Açaí está sendo reconstruído como um PWA no estilo delivery para navegação de cardápio, pedidos de convidados, contas autenticadas e controle de estoque para admin.
 
-## Current direction
+## Direção atual
 
-- React + Vite frontend;
-- FastAPI backend under `backend/src`;
-- SQLite persistence;
-- JWT authentication;
-- realtime order and inventory updates;
-- stock and recipe-based consumption.
+- frontend em React + Vite;
+- backend FastAPI em `backend/src`;
+- persistência em SQLite;
+- autenticação JWT;
+- atualizações em tempo real de pedidos e estoque;
+- consumo baseado em estoque e receitas.
 
-## Run locally
+## Como executar localmente
 
 Backend:
 
@@ -28,27 +28,27 @@ npm install
 npm run dev
 ```
 
-Windows launcher:
+Launcher para Windows:
 
 ```bat
 start-wa-acai.bat
 ```
 
-The launcher will create `.venv` if needed, install dependencies, start backend and frontend, and open the browser automatically.
+O launcher cria `.venv` se necessário, instala dependências, inicia backend e frontend e abre o navegador automaticamente.
 
-When started with `--debug`, backend logs are written to `logs/wa-acai.log` in addition to the console.
+Quando iniciado com `--debug`, os logs do backend também são gravados em `logs/wa-acai.log`, além do console.
 
-## Admin access
+## Acesso admin
 
-The first admin is created through the one-time setup screen in the admin area.
+O primeiro admin é criado pela tela de setup único na área administrativa.
 
-## Convention
+## Convenção
 
-- `project.overview.md` is the agent entry point;
-- `project.update.md` defines the current update flow;
-- `agent/` contains the durable convention workspace;
-- `docs/` contains the human-facing layer.
+- `project.overview.md` é o ponto de entrada do agente;
+- `project.update.md` define o fluxo atual de atualização;
+- `agent/` contém o workspace durável da convenção;
+- `docs/` contém a camada de documentação voltada para pessoas.
 
 ## Status
 
-The implementation base is rebuilt and smoke-tested against the new product concept described in `agent/specs/wa-acai.spec.md`.
+A base de implementação foi reconstruída e validada por smoke test conforme o novo conceito do produto descrito em `agent/specs/wa-acai.spec.md`.

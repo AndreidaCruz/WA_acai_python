@@ -1,24 +1,25 @@
-# Security Spec
+# Spec de Segurança
 
-This spec defines cross-cutting security rules.
+Esta spec define regras transversais de segurança.
 
-## Scope
+## Escopo
 
-- authentication protection;
-- role-based access;
-- form validation;
-- safe handling of sessions and tokens;
-- low-risk defaults for admin operations.
+- autenticação;
+- autorização;
+- proteção de rotas administrativas;
+- hash de senhas;
+- proteção de sessão e token;
+- logging seguro.
 
-## Rules
+## Regras
 
-- authenticated routes must require valid tokens;
-- admin actions must require admin privileges;
-- input validation must happen before persistence or execution;
-- secret values must come from environment or secured configuration;
-- security rules must be applied consistently across frontend and backend surfaces.
+- segredos não podem aparecer em logs;
+- rotas administrativas devem validar perfil;
+- o acesso deve ser negado de forma explícita quando a sessão não for válida;
+- falhas de autenticação devem ser tratadas sem vazar informação sensível;
+- a superfície pública deve continuar utilizável sem conceder acesso indevido.
 
-## Related
+## Relacionados
 
 - [security.stat](security.stat.md)
 - [authentication.spec](authentication.spec.md)

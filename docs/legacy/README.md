@@ -1,13 +1,13 @@
-# Legacy
+# Legado
 
-Replaced history, old tracks, and material outside the active base.
+Esta pasta guarda histórico substituído, material antigo ou referências fora da base ativa.
 
-## Use
+## Uso
 
-- use for documents that are no longer the main reference;
-- keep links to the active alternative when one exists.
+- preservar contexto antigo quando ele ainda for útil;
+- evitar misturar legado com a base atual;
+- migrar para cá apenas quando o material realmente estiver fora do fluxo ativo.
 
-## Related
+## Relacionados
 
 - [../README.md](../README.md)
-- [../../agent/specs/README.md](../../agent/specs/README.md)

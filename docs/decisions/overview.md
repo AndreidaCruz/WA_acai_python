@@ -1,13 +1,13 @@
-# Decisions
+# Decisões
 
-Approved and closed decisions live here.
+Esta pasta registra decisões aprovadas, fechadas ou com efeito durável.
 
-## Use
+## Uso
 
-- record decisions that are no longer open;
-- keep the reasoning readable;
-- do not use this folder for draft debates.
+- guardar decisões já tomadas;
+- evitar discussão solta aqui;
+- manter o histórico de mudança compreensível.
 
-## Related
+## Relacionados
 
 - [../overview.md](../overview.md)

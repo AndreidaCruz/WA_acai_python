@@ -1,29 +1,29 @@
-# PWA Stat
+# Estatuto de PWA
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- PWA behavior is split out as a dedicated contract.
+- o comportamento de PWA foi separado como contrato dedicado.
 
-## Pending items
+## Pendências
 
-- define manifest and service worker strategy;
-- connect app branding data to PWA metadata.
+- definir a estratégia de manifest e service worker;
+- conectar os dados de identidade visual do app aos metadados de PWA.
 
-## Evidence / validation
+## Evidências / validação
 
-- PWA contract documented independently.
+- o contrato de PWA está documentado de forma independente.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-pwa-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: PWA contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de PWA separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [pwa.spec](pwa.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

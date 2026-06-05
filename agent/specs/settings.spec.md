@@ -1,26 +1,24 @@
-# Settings Spec
+# Spec de Configurações
 
-This spec defines store configuration and white-label customization.
+Esta spec define a configuração da loja e a personalização visual da marca.
 
-## Scope
+## Escopo
 
-- store name and identity;
-- contact and social links;
-- operational settings;
-- theme and brand colors;
-- SEO and PWA text metadata;
-- single active configuration record.
+- configuração da loja;
+- identidade visual;
+- dados de contato;
+- taxa e tempo médio de entrega;
+- textos e metadados do aplicativo.
 
-## Rules
+## Regras
 
-- the store configuration must be editable in the admin area;
-- only one active configuration record should drive the storefront;
-- visual identity must update without code changes;
-- store settings must be stored in the database;
-- public-facing text should come from configuration when possible.
+- as configurações devem ser editáveis pelo admin sem alterar o código;
+- os campos de branding devem refletir a marca visível ao cliente;
+- os dados da loja devem ser consumidos pela vitrine e pelo aplicativo;
+- o estado da loja aberta ou fechada deve ficar no backend.
 
-## Related
+## Relacionados
 
 - [settings.stat](settings.stat.md)
-- [media.spec](media.spec.md)
+- [catalog.spec](catalog.spec.md)
 - [pwa.spec](pwa.spec.md)

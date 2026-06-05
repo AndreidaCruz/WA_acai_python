@@ -1,25 +1,24 @@
-# Media Spec
+# Spec de Mídia
 
-This spec defines images, logos, banners, and uploaded media handling.
+Esta spec define imagens, logos, banners e o tratamento de arquivos enviados.
 
-## Scope
+## Escopo
 
-- product images;
-- stock images;
-- complement images;
-- store logo and banner;
-- favicon and PWA icons;
-- uploaded media storage paths.
+- imagens de produto;
+- imagens de estoque;
+- logos e banners da loja;
+- caminhos de upload persistidos no banco;
+- organização de arquivos de mídia.
 
-## Rules
+## Regras
 
-- uploads must store file paths rather than binary blobs in the database;
-- media storage should use a predictable directory layout;
-- default assets must be used when no custom asset exists;
-- media should be available to the storefront and admin views.
+- o banco deve guardar caminhos, não binários brutos;
+- a mídia deve ser associada à entidade correta quando necessário;
+- uploads devem permanecer rastreáveis e reaproveitáveis;
+- o frontend deve conseguir renderizar imagens de forma simples.
 
-## Related
+## Relacionados
 
 - [media.stat](media.stat.md)
+- [catalog.spec](catalog.spec.md)
 - [settings.spec](settings.spec.md)
-- [pwa.spec](pwa.spec.md)

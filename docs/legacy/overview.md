@@ -1,12 +1,13 @@
-# Legacy
+# Legado
 
-Material that has been replaced or is outside the active base.
+Esta pasta guarda histórico substituído, material antigo ou referências fora da base ativa.
 
-## Use
+## Uso
 
-- keep old references when they still help historical understanding;
-- avoid mixing legacy material with the active working set.
+- preservar contexto antigo quando ele ainda for útil;
+- evitar misturar legado com a base atual;
+- migrar para cá apenas quando o material realmente estiver fora do fluxo ativo.
 
-## Related
+## Relacionados
 
 - [../overview.md](../overview.md)

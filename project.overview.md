@@ -1,30 +1,14 @@
 # Project Overview
 
-This is the agent entry point for the repository.
+O objetivo do projeto é manter um ponto de entrada estável para a convenção do agente.
 
-Read this file first.
-Then follow the order below.
+## Papel
 
-## Reading order
+- indicar o contrato-base do repositório;
+- orientar a leitura inicial;
+- apontar para o fluxo de atualização vigente.
 
-1. `project.update.md`
-2. `project.migrations.md` when the repository needs version-by-version upgrades
-3. `README.md` for the human project landing page
-4. `agent-start-here.md`
-5. `agent/overview.md`
-6. `agent/specs/overview.md`
-7. `agent/policy/overview.md`
-8. `docs/overview.md`
-
-## Basic rule
-
-- `README.md` is for humans.
-- `project.overview.md` is the agent map.
-- `project.update.md` is the update flow index.
-- `project.migrations.md` is the version-ledger for upgrade steps.
-
-## Related
+## Relacionados
 
 - [project.update.md](project.update.md)
-- [project.migrations.md](project.migrations.md)
 - [agent-start-here.md](agent-start-here.md)

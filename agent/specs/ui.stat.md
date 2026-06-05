@@ -1,41 +1,41 @@
-# UI Stat
+# Estatuto de Interface
 
-Last update date: 2026-06-02
+Data da última atualização: 2026-06-02
 
-## Current state
+## Estado atual
 
-- the UI shell now separates customer and admin navigation more clearly, with role-aware top bar identity and cart entry;
-- the product detail flow uses a focused composer so complements do not depend on long scrolling;
-- the product composer now uses a two-column layout with preview/image and a visible ingredient list when space allows;
-- the composer includes quantity selection and price summary before checkout;
-- combo bundles are now being treated as sequential multi-cup composition instead of a single undifferentiated item;
-- the admin area is being split into validated role-based sections instead of a generic visible tab;
-- alert and toast feedback is present in the shell and should continue to be applied to all async admin and checkout flows;
-- the orders area still needs the final polish pass for operational status handling and user management visibility.
+- a shell de interface agora separa com mais clareza a navegação de cliente e admin, com identidade na barra superior sensível ao papel e entrada para o carrinho;
+- o fluxo de detalhe do produto usa um compositor focado para que os complementos não dependam de rolagem longa;
+- o compositor de produto agora usa um layout de duas colunas com pré-visualização/imagem e lista visível de ingredientes quando há espaço;
+- o compositor inclui seleção de quantidade e resumo de preço antes do checkout;
+- os combos passaram a ser tratados como composição sequencial de dois copos, em vez de um item único e indiferenciado;
+- a área de admin está sendo dividida em seções validadas por papel, em vez de uma aba genérica visível;
+- o feedback por alertas e toasts já existe na shell e deve continuar sendo aplicado a todos os fluxos assíncronos de admin e checkout;
+- a área de pedidos ainda precisa do polimento final para tratar status operacionais e visibilidade de gestão de usuários.
 
-## Pending items
+## Pendências
 
-- finish the admin orders board with clear status transitions and refresh affordances;
-- expose user listing and promotion controls in the admin panel;
-- keep the admin shell split into overview, stock, users, and settings sections;
-- extend the toast/alert pattern to every important async shell action;
-- keep the customer cart as a separate special flow with order tracking after checkout.
+- finalizar o painel de pedidos do admin com transições claras de status e ações de atualização;
+- expor a listagem de usuários e os controles de promoção no painel de admin;
+- manter a shell do admin dividida em visão geral, estoque, usuários e configurações;
+- estender o padrão de toast/alerta para toda ação assíncrona importante da shell;
+- manter o carrinho do cliente como um fluxo especial separado com acompanhamento do pedido após o checkout.
 
-## Evidence / validation
+## Evidências / validação
 
-- the problem was identified from the current frontend shell and navigation;
-- the requirement has now been captured as an explicit UI contract.
-- toast notifications are now wired for login errors, admin actions, and order/cart flows.
+- o problema foi identificado a partir da shell e da navegação atuais do frontend;
+- a necessidade foi registrada como contrato explícito de interface.
+- as notificações toast já estão ligadas a erros de login, ações do admin e fluxos de pedido/carrinho.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260602-ui-shell-02`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: UI shell contract refined to separate guest, customer, cart, and admin navigation with operational admin sections.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato da shell de interface refinado para separar navegação de visitante, cliente, carrinho e admin com seções operacionais.
 
-## Related
+## Relacionados
 
 - [ui.spec](ui.spec.md)
 - [wa-acai.spec](wa-acai.spec.md)

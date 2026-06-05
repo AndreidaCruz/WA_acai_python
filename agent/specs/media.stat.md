@@ -1,29 +1,29 @@
-# Media Stat
+# Estatuto de Mídia
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- media and upload handling is split out as its own contract.
+- o tratamento de mídia e uploads foi separado como contrato próprio.
 
-## Pending items
+## Pendências
 
-- define upload endpoints and storage layout;
-- connect branding assets to the store settings.
+- definir os endpoints de upload e o layout de armazenamento;
+- ligar os ativos de identidade visual às configurações da loja.
 
-## Evidence / validation
+## Evidências / validação
 
-- media contract documented independently.
+- o contrato de mídia está documentado de forma independente.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-media-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: media contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de mídia separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [media.spec](media.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

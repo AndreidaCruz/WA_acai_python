@@ -1,19 +1,19 @@
-# Spec / Stat Policy
+# Política de Spec / Stat
 
-- `.spec` is durable contract;
-- `.stat` is live state;
-- every active `.spec` must have a `.stat`;
-- `agent/specs/` concentrates the normative contracts that guide changes in the project;
-- `docs/` may reference specs, but it does not replace `agent/specs/` as the main contract source;
-- `.stat` does not replace Git, but it can reference `trace_id` and, after the commit, the hash for traceability;
-- `.spec` does not record progress;
-- `.stat` does not redefine contract;
-- specs need a clear domain;
-- overly generic specs should be split;
-- update `.spec` when the contract changes;
-- update `.stat` when the state changes.
+- `.spec` é contrato durável;
+- `.stat` é estado vivo;
+- toda `.spec` ativa deve ter uma `.stat`;
+- `agent/specs/` concentra os contratos normativos que guiam mudanças no projeto;
+- `docs/` pode referenciar specs, mas não substitui `agent/specs/` como fonte principal de contrato;
+- `.stat` não substitui Git, mas pode referenciar `trace_id` e, após o commit, o hash para rastreabilidade;
+- `.spec` não registra progresso;
+- `.stat` não redefine contrato;
+- specs precisam ter domínio claro;
+- specs genéricas demais devem ser quebradas;
+- atualize `.spec` quando o contrato mudar;
+- atualize `.stat` quando o estado mudar.
 
-## Related
+## Relacionados
 
 - [../specs/README.md](../specs/README.md)
 - [../specs/project.spec.md](../specs/project.spec.md)

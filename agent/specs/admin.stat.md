@@ -1,37 +1,37 @@
-# Admin Stat
+# Estatuto de Admin
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- admin operations are split out as a dedicated contract.
-- first-run admin setup is explicitly part of the admin contract.
-- the frontend exposes a one-time setup screen before the first admin exists.
-- the admin shell is being separated into overview, stock, users, and configuration areas, with orders handled as an operational board.
+- as operações de admin foram separadas como contrato dedicado.
+- o setup inicial do primeiro admin faz parte explicitamente do contrato de admin.
+- o frontend expõe uma tela de setup único antes de existir o primeiro admin.
+- a shell do admin está sendo separada em áreas de visão geral, estoque, usuários e configuração, com pedidos tratados como um painel operacional.
 
-## Pending items
+## Pendências
 
-- finish the operational orders board with explicit status transitions and refresh behavior.
-- expose customer user listing and promotion to admin from the panel.
-- keep all admin actions behind backend validation.
-- keep the first-run screen hidden after initialization.
+- finalizar o painel operacional de pedidos com transições explícitas de status e comportamento de atualização.
+- expor a listagem de usuários clientes e a promoção para admin pelo painel.
+- manter todas as ações de admin validadas pelo backend.
+- manter a tela inicial oculta após a inicialização.
 
-## Evidence / validation
+## Evidências / validação
 
-- admin contract documented independently.
-- initial setup flow added to the codebase and contract.
-- one-time admin bootstrap verified in the UI/API flow.
-- admin user promotion and role-aware navigation are now being added to the shell.
+- o contrato de admin está documentado de forma independente.
+- o fluxo de setup inicial foi adicionado ao código-base e ao contrato.
+- o bootstrap único do admin foi verificado no fluxo de UI/API.
+- a promoção de usuário admin e a navegação sensível a papel estão sendo adicionadas à shell.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260602-admin-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: admin contract split from the product umbrella and expanded into operational sections.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de admin separado do guarda-chuva do produto e expandido em seções operacionais.
 
-## Related
+## Relacionados
 
 - [admin.spec](admin.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

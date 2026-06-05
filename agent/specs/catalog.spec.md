@@ -1,25 +1,25 @@
-# Catalog Spec
+# Spec do Cardápio
 
-This spec defines the public storefront and product browsing experience.
+Esta spec define a vitrine pública e a experiência de navegação dos produtos.
 
-## Scope
+## Escopo
 
-- public catalog;
-- product cards with image, title, description, and price;
-- cart building;
-- complement selection;
-- product cards must open a focused detail/composer flow for complements and purchase actions;
-- mobile-first storefront behavior.
+- cardápio público;
+- cards de produto com imagem, título, descrição e preço;
+- montagem do carrinho;
+- seleção de complementos;
+- os cards de produto devem abrir um fluxo focado de detalhe/composição para complementos e ações de compra;
+- comportamento mobile-first da vitrine.
 
-## Rules
+## Regras
 
-- catalog data must come from the backend;
-- complement lists must not be hardcoded in the frontend;
-- the storefront must allow adding items to a local cart;
-- the storefront must support guest checkout flows;
-- the storefront must remain readable on mobile screens.
+- os dados do cardápio devem vir do backend;
+- listas de complementos não devem ser hardcoded no frontend;
+- a vitrine deve permitir adicionar itens a um carrinho local;
+- a vitrine deve suportar fluxos de checkout de convidado;
+- a vitrine deve continuar legível em telas mobile.
 
-## Related
+## Relacionados
 
 - [catalog.stat](catalog.stat.md)
 - [orders.spec](orders.spec.md)

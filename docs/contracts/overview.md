@@ -1,14 +1,14 @@
-# Contracts
+# Contratos
 
-This folder contains human-facing explanations of contracts without replacing the normative `.spec`.
+Esta pasta reúne documentos explicativos sobre contratos, sem substituir as specs.
 
-## Use
+## Uso
 
-- explain contract context;
-- summarize decisions that already exist in `.spec`;
-- provide examples or implementation notes when that helps understanding.
+- esclarecer intenção e interpretação;
+- apoiar leitura humana;
+- não redefinir regra durável aqui.
 
-## Related
+## Relacionados
 
 - [../overview.md](../overview.md)
 - [../../agent/specs/overview.md](../../agent/specs/overview.md)

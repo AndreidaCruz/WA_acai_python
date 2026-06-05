@@ -1,46 +1,46 @@
-# Docs
+# Documentação
 
-This directory gathers the human layer of the project: explanation, context,
-evidence, planning, decisions, and legacy.
+Esta pasta reúne a camada humana do projeto: explicações, contexto, evidências,
+planejamento, decisões e legado.
 
-## Index
+## Índice
 
-- [contracts/README.md](./contracts/README.md): documentation that explains contracts without replacing the spec;
-- [policies/README.md](./policies/README.md): human documentation for governance and usage;
-- [reports/README.md](./reports/README.md): evidence, audits, and validation;
-- [plans/README.md](./plans/README.md): migrations, phases, and future work;
-- [guides/README.md](./guides/README.md): practical guides and playbooks;
-- [decisions/README.md](./decisions/README.md): approved and closed decisions;
-- [concepts/README.md](./concepts/README.md): concepts and evolution models;
-- [legacy/README.md](./legacy/README.md): replaced history or material outside the active base.
+- [contracts/README.md](./contracts/README.md): documentação que explica contratos sem substituir a spec;
+- [policies/README.md](./policies/README.md): documentação humana sobre governança e uso;
+- [reports/README.md](./reports/README.md): evidências, auditorias e validações;
+- [plans/README.md](./plans/README.md): migrações, fases e trabalho futuro;
+- [guides/README.md](./guides/README.md): guias práticos e playbooks;
+- [decisions/README.md](./decisions/README.md): decisões aprovadas e encerradas;
+- [concepts/README.md](./concepts/README.md): conceitos e modelos de evolução;
+- [legacy/README.md](./legacy/README.md): histórico substituído ou material fora da base ativa.
 
-## How to read
+## Como ler
 
-- use `docs/` to understand the project's human context;
-- use `agent/specs/` to read the normative contract;
-- use `agent/policy/` to read the agent's durable rules;
-- use `agent/README.md` to understand the operational workspace;
-- when a doc grows to the point of becoming a rule, consider migrating it to
-  `.spec` and `.stat`;
-- when a doc cites a file that is not `.md`, use the explicit file path; do
-  not create a new note to represent it in Obsidian.
+- use `docs/` para entender o contexto humano do projeto;
+- use `agent/specs/` para ler o contrato normativo;
+- use `agent/policy/` para ler as regras duráveis do agente;
+- use `agent/README.md` para entender o workspace operacional;
+- quando um documento crescer a ponto de virar regra, considere migrá-lo para
+  `.spec` e `.stat`;
+- quando um documento citar um arquivo que não seja `.md`, use o caminho
+  explícito; não crie uma nota nova para representá-lo no Obsidian.
 
-## Related contracts
+## Contratos relacionados
 
 - [../agent/specs/README.md](../agent/specs/README.md)
 - [../agent/specs/project.spec.md](../agent/specs/project.spec.md)
 - [../agent/specs/project.stat.md](../agent/specs/project.stat.md)
 
-## Relation to the convention
+## Relação com a convenção
 
-- [../agent-start-here.md](../agent-start-here.md) is the agent entry point;
-- [../agent/policy/README.md](../agent/policy/README.md) concentrates durable policies;
-- [../agent/specs/README.md](../agent/specs/README.md) concentrates normative contracts;
-- [../agent/README.md](../agent/README.md) concentrates the operational workspace;
-- `docs/` complements with human context and conceptual continuity;
-- when in doubt between contract and explanation, read the corresponding spec first.
+- [../agent-start-here.md](../agent-start-here.md) é o ponto de entrada do agente;
+- [../agent/policy/README.md](../agent/policy/README.md) concentra as políticas duráveis;
+- [../agent/specs/README.md](../agent/specs/README.md) concentra os contratos normativos;
+- [../agent/README.md](../agent/README.md) concentra o workspace operacional;
+- `docs/` complementa com contexto humano e continuidade conceitual;
+- em caso de dúvida entre contrato e explicação, leia primeiro a spec correspondente.
 
-## Related
+## Relacionados
 
 - [concepts/README.md](./concepts/README.md)
 - [../agent/README.md](../agent/README.md)

@@ -1,26 +1,26 @@
-# Orders Spec
+# Spec de Pedidos
 
-This spec defines order creation, tracking, and lifecycle behavior.
+Esta spec define a criação, o rastreio e o comportamento de ciclo de vida dos pedidos.
 
-## Scope
+## Escopo
 
-- order number generation;
-- guest order creation;
-- customer contact and delivery data;
-- observations on orders;
-- order status transitions;
-- readiness and fulfillment flow.
+- geração de número de pedido;
+- criação de pedido de convidado;
+- dados de contato e entrega do cliente;
+- observações do pedido;
+- transições de status;
+- fluxo de preparação e conclusão.
 
-## Rules
+## Regras
 
-- internal database IDs must not be exposed as the public order number;
-- the order must capture customer name, phone, address, and observations;
-- status transitions must follow a defined workflow;
-- stock must not be reduced when the order is first created;
-- order completion or fulfillment stages must trigger stock consumption according to stored recipes;
-- order history must remain intact after completion or cancellation.
+- IDs internos do banco não devem ser expostos como número público do pedido;
+- o pedido deve capturar nome, telefone, endereço e observações;
+- as transições de status devem seguir um fluxo definido;
+- o estoque não deve ser reduzido quando o pedido é criado pela primeira vez;
+- etapas de conclusão ou expedição devem disparar consumo de estoque conforme receitas armazenadas;
+- o histórico do pedido deve permanecer intacto após conclusão ou cancelamento.
 
-## Related
+## Relacionados
 
 - [orders.stat](orders.stat.md)
 - [inventory.spec](inventory.spec.md)

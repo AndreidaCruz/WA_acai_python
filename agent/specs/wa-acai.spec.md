@@ -1,74 +1,74 @@
-# WA Açaí Spec
+# Spec do WA Açaí
 
-This spec defines the product contract for the WA Açaí application.
+Esta spec define o contrato do produto para o aplicativo WA Açaí.
 
-## Scope
+## Escopo
 
-- PWA storefront for açaí, snacks, and add-ons;
-- guest ordering without mandatory account creation;
-- authenticated customer accounts with order history and profile access;
-- administrator access for products, stock, orders, and dashboards;
-- online catalog and cart flow similar to a food delivery app;
-- backend services for authentication, orders, inventory, and realtime updates;
-- frontend built with React and Vite;
-- backend built with FastAPI and SQLite.
+- vitrine PWA para açaí, lanches e adicionais;
+- pedido de convidado sem criação obrigatória de conta;
+- contas autenticadas de cliente com histórico e perfil;
+- acesso administrativo para produtos, estoque, pedidos e dashboards;
+- fluxo de cardápio e carrinho no estilo delivery;
+- serviços de backend para autenticação, pedidos, estoque e atualizações em tempo real;
+- frontend construído com React e Vite;
+- backend construído com FastAPI e SQLite.
 
-## Architecture goals
+## Objetivos de arquitetura
 
-- keep the backend modular, with separated routes, schemas, services, repositories, database, websocket, auth, and utils layers;
-- keep the frontend organized by features, with pages, components, layouts, hooks, services, store, websocket, utils, contexts, and routes;
-- avoid hardcoded business rules when the rule can be represented in the database;
-- avoid duplicated logic across frontend and backend;
-- prefer explicit dependencies and simple boundaries that can grow with the MVP.
+- manter o backend modular, com rotas, schemas, serviços, repositórios, banco, websocket, auth e utils separados;
+- manter o frontend organizado por features, com páginas, componentes, layouts, hooks, serviços, store, websocket, utils, contexts e rotas;
+- evitar regras de negócio hardcoded quando a regra puder ser representada no banco;
+- evitar lógica duplicada entre frontend e backend;
+- preferir dependências explícitas e limites simples que possam crescer com o MVP.
 
-## Product rules
+## Regras do produto
 
-- guests must be able to browse the catalog, build a cart, and place an order;
-- logged-in users must be able to view history, repeat orders, and edit profile data;
-- administrators must be able to manage products, stock, orders, and dashboards;
-- orders must support customer name, phone, and delivery address before confirmation;
-- orders created as guest must still be saved and linked later if the user authenticates;
-- product catalog items must support images, descriptions, price, active state, and permitted complements;
-- stock items must support unit of measure, current quantity, and minimum threshold;
-- complements must consume stock through technical recipes or configured consumption rules;
-- stock must not be reduced when an order is created;
-- stock must be reduced when the order reaches the configured fulfillment stage;
-- all stock changes must be recorded as movements;
-- realtime updates must be available for new orders, status changes, and inventory movements;
-- the frontend must be able to work as a PWA.
-- the shell must separate customer and admin navigation clearly, showing `Entrar` when no user is authenticated and showing the authenticated identity when a session exists;
-- the admin shell must expose role-validated operational areas instead of a generic always-visible tab;
-- the cart must remain a dedicated special flow with post-checkout tracking, not a buried list view.
+- convidados devem poder navegar no cardápio, montar o carrinho e fazer pedido;
+- usuários logados devem poder ver histórico, repetir pedidos e editar perfil;
+- administradores devem conseguir gerenciar produtos, estoque, pedidos e dashboards;
+- os pedidos devem exigir nome, telefone e endereço antes da confirmação;
+- pedidos criados como convidado ainda devem ser salvos e vinculados depois, se o usuário autenticar;
+- os itens do cardápio devem suportar imagem, descrição, preço, estado ativo e complementos permitidos;
+- os itens de estoque devem suportar unidade de medida, quantidade atual e limite mínimo;
+- os complementos devem consumir estoque por meio de receitas técnicas ou regras de consumo configuradas;
+- o estoque não deve ser reduzido quando um pedido é criado;
+- o estoque deve ser reduzido quando o pedido atingir a etapa de fulfillment configurada;
+- todas as alterações de estoque devem ser registradas como movimentações;
+- atualizações em tempo real devem estar disponíveis para novos pedidos, mudanças de status e movimentações de inventário;
+- o frontend deve conseguir funcionar como PWA.
+- o shell deve separar com clareza a navegação de cliente e admin, mostrando `Entrar` quando não houver usuário autenticado e exibindo a identidade autenticada quando a sessão existir;
+- o shell do admin deve expor áreas operacionais validadas por perfil em vez de uma aba genérica sempre visível;
+- o carrinho deve continuar sendo um fluxo especial com tracking pós-checkout, e não uma lista escondida.
 
-## Data model guidance
+## Orientação de modelo de dados
 
-- orders must have a public order number separate from the internal identifier;
-- orders must support customer name, phone, address, status, observations, and timestamps;
-- products must distinguish commercial products from stock products;
-- commercial products must support price, description, image, active state, availability, and permitted complements;
-- stock products must support unit of measure, current quantity, minimum stock, and active state;
-- complement availability must be configurable from stored data rather than hardcoded arrays;
-- stock movement history must be preserved for auditing.
+- os pedidos devem ter um número público separado do identificador interno;
+- os pedidos devem suportar nome do cliente, telefone, endereço, status, observações e timestamps;
+- os produtos devem distinguir produto comercial de produto de estoque;
+- os produtos comerciais devem suportar preço, descrição, imagem, estado ativo, disponibilidade e complementos permitidos;
+- os produtos de estoque devem suportar unidade de medida, quantidade atual, estoque mínimo e estado ativo;
+- a disponibilidade de complementos deve ser configurável a partir de dados persistidos e não de arrays hardcoded;
+- o histórico de movimentações de estoque deve ser preservado para auditoria.
 
-## Technical contract
+## Contrato técnico
 
-- the backend uses FastAPI;
-- persistence uses SQLite;
-- authentication uses JWT with secure password hashing;
-- the frontend uses React, Vite, React Router, Axios, WebSockets, and PWA support;
-- the backend must expose endpoints for auth, catalog, cart/purchase flow, admin management, and stock operations.
+- o backend usa FastAPI;
+- a persistência usa SQLite;
+- a autenticação usa JWT com hash seguro de senha;
+- o frontend usa React, Vite, React Router, Axios, WebSockets e suporte a PWA;
+- o backend deve expor endpoints para auth, cardápio, fluxo de compra, administração e operações de estoque.
 
-## Operational rules
+## Regras operacionais
 
-- soft delete must be used for business entities that should remain in history;
-- stock must be validated before order confirmation;
-- if stock is insufficient, the order cannot be confirmed and a friendly message must be shown;
-- stock reduction must happen from recipe and complement consumption data stored in the database;
-- admin configuration must be editable without changing source code;
-- uploads must persist file paths, not raw binaries, in the database.
-- critical application events must be logged centrally without secrets, and debug runs must write to `logs/`;
+- soft delete deve ser usado para entidades de negócio que precisam permanecer no histórico;
+- o estoque deve ser validado antes da confirmação do pedido;
+- se o estoque for insuficiente, o pedido não pode ser confirmado e uma mensagem amigável deve ser exibida;
+- a redução de estoque deve acontecer com base em dados de receita e consumo de complementos armazenados no banco;
+- a configuração do admin deve ser editável sem alterar o código-fonte;
+- uploads devem persistir caminhos de arquivo, e não binários crus, no banco.
+- eventos críticos da aplicação devem ser registrados centralmente sem segredos, e execuções em debug devem gravar logs em `logs/`;
 
-## Domain map
+## Mapa de domínios
 
 - [architecture.spec](architecture.spec.md)
 - [authentication.spec](authentication.spec.md)
@@ -84,7 +84,7 @@ This spec defines the product contract for the WA Açaí application.
 - [security.spec](security.spec.md)
 - [admin.spec](admin.spec.md)
 
-## Related
+## Relacionados
 
 - [wa-acai.stat](wa-acai.stat.md)
 - [project.spec](project.spec.md)

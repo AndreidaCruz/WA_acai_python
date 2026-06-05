@@ -1,19 +1,24 @@
-# Policies
+# Políticas do Agente
 
-This directory stores the durable rules that govern agent work in this repository.
+Esta pasta guarda as regras completas do agente.
 
-## Index
+## Como usar
 
-- [README.md](README.md)
-- [agent-workflow.policy.md](agent-workflow.policy.md)
-- [spec-stat.policy.md](spec-stat.policy.md)
-- [linking.policy.md](linking.policy.md)
-- [commit-safety.policy.md](commit-safety.policy.md)
-- [adequation.policy.md](adequation.policy.md)
-- [official-documentation.policy.md](official-documentation.policy.md)
-- [workspace.policy.md](workspace.policy.md)
+- mantenha as políticas curtas e estáveis;
+- prefira uma política por tema;
+- não use políticas como log de progresso;
+- não misture evidências temporárias com regras duráveis.
 
-## Related
+## Índice
 
-- [../overview.md](../overview.md)
+- [agent-workflow.policy](agent-workflow.policy.md): workflow, validação e handoff;
+- [spec-stat.policy](spec-stat.policy.md): relação entre contrato e estado;
+- [linking.policy](linking.policy.md): links úteis entre documentos e relações de domínio;
+- [adequation.policy](adequation.policy.md): protocolo de adequação pós-instalação e fases de alinhamento;
+- [official-documentation.policy](official-documentation.policy.md): regra de documentação oficial viva;
+- [workspace.policy](workspace.policy.md): organização operacional do workspace;
+- [commit-safety.policy](commit-safety.policy.md): segurança e higiene de commits.
+
+## Relacionados
+
 - [../specs/overview.md](../specs/overview.md)

@@ -1,24 +1,24 @@
-# Architecture Spec
+# Spec de Arquitetura
 
-This spec defines the structural contract for the WA Açaí codebase.
+Esta spec define o contrato estrutural da base de código do WA Açaí.
 
-## Scope
+## Escopo
 
-- backend module boundaries;
-- frontend feature boundaries;
-- shared separation of responsibilities;
-- explicit dependencies;
-- extensibility without hardcoded business rules.
+- limites entre módulos do backend;
+- limites entre features do frontend;
+- separação clara de responsabilidades;
+- dependências explícitas;
+- possibilidade de evolução sem regras de negócio hardcoded.
 
-## Rules
+## Regras
 
-- the backend must keep routes, schemas, services, repositories, database, websocket, auth, and utils separated;
-- the frontend must keep pages, components, layouts, hooks, services, store, websocket, utils, contexts, and routes separated;
-- business rules must live in domain services or persisted rules, not in controllers alone;
-- shared cross-cutting concerns must be centralized rather than duplicated;
-- code should favor simple interfaces that can grow with the MVP.
+- o backend deve manter rotas, schemas, serviços, repositórios, banco, websocket, auth e utils separados;
+- o frontend deve manter páginas, componentes, layouts, hooks, serviços, store, websocket, utils, contexts e rotas separados;
+- regras de negócio devem viver em serviços de domínio ou em regras persistidas, não apenas em controllers;
+- preocupações transversais devem ser centralizadas em vez de duplicadas;
+- o código deve favorecer interfaces simples que possam crescer com o MVP.
 
-## Related
+## Relacionados
 
 - [architecture.stat](architecture.stat.md)
 - [wa-acai.spec](wa-acai.spec.md)

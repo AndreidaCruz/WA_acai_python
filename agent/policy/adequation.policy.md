@@ -1,102 +1,101 @@
-# Adequation Policy
+# Política de Adequação
 
-- this policy guides the post-install adequation mode of the convention;
-- use it when the repository has already received `standard` and needs to be aligned with the usage contract;
-- do not make large structural changes without going through the phases and approvals below;
-- treat each phase as a reusable checkpoint;
-- the goal is to leave the repository ready for the agent to work with less noise and fewer assumptions.
+- esta política orienta o modo de adequação pós-instalação da convenção;
+- use-a quando o repositório já recebeu `standard` e precisa ser alinhado ao contrato de uso;
+- não faça mudanças estruturais grandes sem passar pelas fases e aprovações abaixo;
+- trate cada fase como um checkpoint reutilizável;
+- o objetivo é deixar o repositório pronto para o agente trabalhar com menos ruído e menos suposições.
 
-## Default flow
+## Fluxo padrão
 
-1. verify the bootstrap;
-2. align the graph and vault exclusions;
-3. map noise, artifacts, and loose files;
-4. ask for approval to organize the repository;
-5. organize the approved repository;
-6. map documentation that needs to become contract or state;
-7. ask for approval to create or adjust context and specs;
-8. create or adjust context, specs, stats, and linking;
-9. ask for approval to consolidate and commit;
-10. record the result in `.stat`.
+1. verificar o bootstrap;
+2. alinhar o grafo e as exclusões do vault;
+3. mapear ruído, artefatos e arquivos soltos;
+4. pedir aprovação para organizar o repositório;
+5. organizar o repositório aprovado;
+6. mapear documentação que precisa virar contrato ou estado;
+7. pedir aprovação para criar ou ajustar contexto e specs;
+8. criar ou ajustar contexto, specs, stats e links;
+9. pedir aprovação para consolidar e commitar;
+10. registrar o resultado em `.stat`.
 
-## Standard handoff
+## Passagem de bastão padrão
 
-After the bootstrap, the agent should end the first message in a short and
-predictable way. The recommended format is:
+Depois do bootstrap, o agente deve encerrar a primeira mensagem com um trecho curto e previsível. O formato recomendado é:
 
 ```text
-I installed the convention, aligned the graph and the .gitignore, and read the adequation roadmap.
-Can I start phase 2: inventory of noise, artifacts, and loose files?
+Instalei a convenção, alinhei o grafo e o .gitignore, e li o roadmap de adequação.
+Posso iniciar a fase 2: inventário de ruído, artefatos e arquivos soltos?
 ```
 
-If approved, the agent moves to the inventory.
-If not approved, the agent stops and waits for new instructions.
+Se aprovado, o agente segue para o inventário.
+Se não for aprovado, o agente para e aguarda novas instruções.
 
-Before leaving each phase, the agent should repeat the same pattern:
+Antes de sair de cada fase, o agente deve repetir o mesmo padrão:
 
-- summarize what was found;
-- list created or changed files;
-- show `git status --short`;
-- say what it plans to do in the next phase;
-- ask for approval before changing structure, moving files, or deleting artifacts.
+- resumir o que encontrou;
+- listar os arquivos criados ou alterados;
+- mostrar `git status --short`;
+- dizer o que planeja fazer na próxima fase;
+- pedir aprovação antes de mudar estrutura, mover arquivos ou excluir artefatos.
 
-## Phase 1: bootstrap
+## Fase 1: bootstrap
 
-- confirm that `agent-start-here.md` was read;
-- confirm that `README.md` and `agent/policy/README.md` were read when they exist;
-- apply the recommended `graph.json` when the project uses Obsidian;
-- align the project `.gitignore` for known local noise;
-- create or align minimal documentation entry points when they are missing, if that is within scope.
+- confirmar que `agent-start-here.md` foi lido;
+- confirmar que `README.md` e `agent/policy/README.md` foram lidos quando existirem;
+- aplicar o `graph.json` recomendado quando o projeto usar Obsidian;
+- alinhar o `.gitignore` do projeto para ruído local conhecido;
+- criar ou alinhar pontos de entrada mínimos de documentação quando estiverem ausentes, se isso estiver no escopo.
 
-## Phase 2: inventory
+## Fase 2: inventário
 
-- list loose files, temporary files, caches, artifacts, notes, reports, and legacy docs;
-- classify each item as:
-  - keep;
-  - investigate;
-  - move;
-  - rename;
-  - delete;
-  - preserve;
-- do not run cleanup without explicit approval.
+- listar arquivos soltos, temporários, caches, artefatos, notas, relatórios e docs legados;
+- classificar cada item como:
+  - manter;
+  - investigar;
+  - mover;
+  - renomear;
+  - excluir;
+  - preservar;
+- não executar limpeza sem aprovação explícita.
 
-## Phase 3: organization
+## Fase 3: organização
 
-- move artifacts to the correct directories;
-- remove approved noise;
-- align the operational workspace;
-- preserve useful history and evidence.
+- mover artefatos para os diretórios corretos;
+- remover ruído aprovado;
+- alinhar o workspace operacional;
+- preservar histórico e evidências úteis.
 
-## Phase 4: context and contracts
+## Fase 4: contexto e contratos
 
-- identify which documents are already contracts;
-- identify which documents need to become `.spec` / `.stat`;
-- identify which documents are just explanation, evidence, or legacy;
-- propose links between docs, specs, stats, and policies by domain and function.
+- identificar quais documentos já são contratos;
+- identificar quais documentos precisam virar `.spec` / `.stat`;
+- identificar quais documentos são apenas explicação, evidência ou legado;
+- propor links entre docs, specs, stats e políticas por domínio e função.
 
-## Phase 5: consolidation
+## Fase 5: consolidação
 
-- update `.stat` with real progress;
-- record `trace_id` when there is a relevant change;
-- if there is a commit, record the message and hash after the commit;
-- make it clear what was done, what is still pending, and what needs a decision.
+- atualizar `.stat` com progresso real;
+- registrar `trace_id` quando houver mudança relevante;
+- se houver commit, registrar a mensagem e o hash depois do commit;
+- deixar claro o que foi feito, o que ainda está pendente e o que precisa de decisão.
 
-## Approval
+## Aprovação
 
-Before moving between phases, show:
+Antes de avançar entre fases, mostrar:
 
-- inventory or proposal summary;
-- created or changed files;
+- resumo do inventário ou da proposta;
+- arquivos criados ou alterados;
 - `git status --short`;
-- doubts and pending decisions.
+- dúvidas e decisões pendentes.
 
-## Core rule
+## Regra central
 
-- adequation exists to make the repository compatible with the convention;
-- do not turn adequation into arbitrary refactoring;
-- do not skip approval when the phase involves structural change.
+- a adequação existe para tornar o repositório compatível com a convenção;
+- não transforme a adequação em refatoração arbitrária;
+- não pule aprovação quando a fase envolver mudança estrutural.
 
-## Related
+## Relacionados
 
 - [README.md](../../README.md)
 - [../README.md](README.md)

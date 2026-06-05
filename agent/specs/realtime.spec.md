@@ -1,23 +1,23 @@
-# Realtime Spec
+# Spec de Tempo Real
 
-This spec defines WebSocket and realtime update behavior.
+Esta spec define o comportamento de WebSocket e de atualização em tempo real.
 
-## Scope
+## Escopo
 
-- new order notifications;
-- order status updates;
-- inventory movement updates;
-- dashboard refresh channels;
-- separated channels for different audiences.
+- canais WebSocket;
+- atualização ao vivo de pedidos;
+- atualização ao vivo de dashboard;
+- atualização ao vivo de estoque;
+- sincronização de eventos relevantes.
 
-## Rules
+## Regras
 
-- realtime channels should be split by audience or concern;
-- updates must be relevant rather than globally broadcast by default;
-- admin dashboards and order monitors must receive only the events they need;
-- realtime behavior must not duplicate the source of truth in the database.
+- as atualizações em tempo real devem complementar, e não quebrar, o fluxo HTTP normal;
+- canais de WebSocket devem ter propósitos claros;
+- o frontend deve conseguir reagir a eventos sem recarregar a página;
+- eventos importantes devem ser rastreáveis.
 
-## Related
+## Relacionados
 
 - [realtime.stat](realtime.stat.md)
 - [orders.spec](orders.spec.md)

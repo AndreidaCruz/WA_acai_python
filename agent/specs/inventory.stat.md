@@ -1,29 +1,29 @@
-# Inventory Stat
+# Estatuto de Estoque
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- stock and movement behavior is split out from the product umbrella.
+- o comportamento de estoque e movimentação foi separado do guarda-chuva do produto.
 
-## Pending items
+## Pendências
 
-- implement the stock model and movement log;
-- wire recipe-based deduction to order fulfillment.
+- implementar o modelo de estoque e o log de movimentações;
+- ligar a baixa baseada em receita à finalização dos pedidos.
 
-## Evidence / validation
+## Evidências / validação
 
-- inventory contract documented separately.
+- o contrato de estoque está documentado separadamente.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-inventory-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: inventory contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de estoque separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [inventory.spec](inventory.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

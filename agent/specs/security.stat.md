@@ -1,29 +1,29 @@
-# Security Stat
+# Estatuto de Segurança
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- security concerns are split out as a cross-cutting contract.
+- as preocupações de segurança foram separadas como contrato transversal.
 
-## Pending items
+## Pendências
 
-- define token storage, session lifetime, and privilege checks in code;
-- connect validation strategy to forms and API payloads.
+- definir armazenamento de token, duração de sessão e checagens de privilégio no código;
+- conectar a estratégia de validação aos formulários e payloads da API.
 
-## Evidence / validation
+## Evidências / validação
 
-- security contract documented independently.
+- o contrato de segurança está documentado de forma independente.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-security-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: security contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de segurança separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [security.spec](security.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

@@ -1,29 +1,29 @@
-# Settings Stat
+# Estatuto de Configurações
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- store settings and white-label behavior are split out as a distinct contract.
+- as configurações da loja e o comportamento white-label foram separados como contrato distinto.
 
-## Pending items
+## Pendências
 
-- implement the settings table and admin editing flow;
-- wire branding fields into the public storefront.
+- implementar a tabela de configurações e o fluxo de edição pelo admin;
+- ligar os campos de identidade visual à vitrine pública.
 
-## Evidence / validation
+## Evidências / validação
 
-- configuration contract documented separately.
+- o contrato de configuração está documentado separadamente.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-settings-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: settings contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de configurações separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [settings.spec](settings.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

@@ -1,29 +1,29 @@
-# Accounts Stat
+# Estatuto de Contas
 
-Last update date: 2026-06-01
+Data da última atualização: 2026-06-01
 
-## Current state
+## Estado atual
 
-- customer and guest account behavior is split out as its own contract.
+- o comportamento de conta de cliente e visitante foi separado como contrato próprio.
 
-## Pending items
+## Pendências
 
-- implement guest order persistence and later linking;
-- implement history and repeat-order access for logged-in users.
+- implementar a persistência de pedidos de visitante e o vínculo posterior;
+- implementar histórico e acesso a repetir pedidos para usuários logados.
 
-## Evidence / validation
+## Evidências / validação
 
-- account scope documented separately from authentication.
+- o escopo de contas está documentado separadamente da autenticação.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260601-accounts-01`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: accounts contract split from the product umbrella.
+- status do commit: não realizado
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: contrato de contas separado do guarda-chuva do produto.
 
-## Related
+## Relacionados
 
 - [accounts.spec](accounts.spec.md)
 - [wa-acai.stat](wa-acai.stat.md)

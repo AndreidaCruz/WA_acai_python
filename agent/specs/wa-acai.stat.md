@@ -1,63 +1,63 @@
-# WA Açaí Stat
+# Stat do WA Açaí
 
-Last update date: 2026-06-02
+Data da última atualização: 2026-06-02
 
-## Current state
+## Estado atual
 
-- the product scope has been reset toward a full delivery-style PWA;
-- the convention layer remains intact and separate from the app reset;
-- the old implementation was cleared to make room for the new architecture;
-- the new backend and frontend base is implemented with modular domain structure;
-- the WA Açaí umbrella spec now points to dedicated domain specs for all major contract areas;
-- the admin login, catalog load, order creation, and stock deduction smoke flow passed;
-- the backend now lives under `backend/src`;
-- the one-time admin setup flow was implemented and smoke-tested;
-- centralized application logging is enabled and debug runs write to `logs/wa-acai.log`.
-- a dedicated UI shell contract is now defined for role-aware navigation, cart entry, and admin access.
-- toast alerts now surface login failures, admin actions, and order/cart confirmations in the shell.
-- the admin shell is being split into overview, stock, users, and settings sections, while the orders board handles operational status changes.
+- o escopo do produto foi resetado para um PWA completo no estilo delivery;
+- a camada de convenção continua intacta e separada do reset da aplicação;
+- a implementação antiga foi limpa para abrir espaço para a nova arquitetura;
+- a nova base de backend e frontend está implementada com estrutura modular por domínio;
+- a spec guarda-chuva do WA Açaí agora aponta para specs de domínio dedicadas para todas as áreas principais do contrato;
+- o fluxo de smoke test de login de admin, carregamento do cardápio, criação de pedido e baixa de estoque passou;
+- o backend agora vive em `backend/src`;
+- o fluxo de setup inicial único do admin foi implementado e validado por smoke test;
+- o logging centralizado da aplicação está ativo e execuções em debug gravam em `logs/wa-acai.log`;
+- existe um contrato dedicado de shell de UI para navegação por perfil, entrada de carrinho e acesso admin;
+- os toasts agora exibem falhas de login, ações de admin e confirmações de pedido/carrinho no shell;
+- o shell do admin está sendo dividido em visão geral, estoque, usuários e configurações, enquanto o board de pedidos trata das mudanças operacionais de status.
 
-## Pending items
+## Pendências
 
-- rebuild the remaining frontend journeys around the catalog, cart, and admin experience;
-- continue filling out the remaining domain flows and UI surfaces;
-- tighten the stock and order experiences on the storefront and admin panels;
-- keep the backend `src` layout stable;
-- keep the setup screen disabled after the first admin is created;
-- keep `.stat` traceable as the architecture evolves;
-- keep logging centralized and free of sensitive payloads.
-- finish the role-aware UI shell and keep customer/admin navigation distinct;
-- extend toast/alert behavior to any remaining async flows;
-- keep admin user promotion and order status management wired to backend validation.
+- reconstruir os demais fluxos de frontend em torno da experiência de cardápio, carrinho e admin;
+- continuar preenchendo os fluxos de domínio e as superfícies de UI restantes;
+- reforçar as experiências de estoque e pedidos na vitrine e nos painéis administrativos;
+- manter o layout `src` do backend estável;
+- manter a tela de setup desativada depois que o primeiro admin for criado;
+- manter `.stat` rastreável conforme a arquitetura evolui;
+- manter o logging centralizado e livre de payloads sensíveis;
+- finalizar o shell de UI com navegação distinta entre cliente e admin;
+- estender o comportamento dos toasts para todos os fluxos assíncronos restantes;
+- manter a promoção de usuário admin e o gerenciamento de status de pedidos validados pelo backend.
 
-## Evidence / validation
+## Evidências / validação
 
-- updated product contract drafted from the new project concept;
-- convention files remain installed and isolated from the app scope;
-- planning docs for roadmap and TODO are being added to keep the work ordered;
-- the product umbrella was split into dedicated domain specs and stats;
-- backend smoke test passed for health, catalog, login, order creation, and stock deduction;
-- frontend build passed with Vite;
-- first-run admin setup was verified and then locked after creation;
-- backend logging was wired into HTTP, auth, orders, admin, websocket, and stock events.
-- UI shell rules were captured as a dedicated contract to remove guest/admin ambiguity.
-- toast notifications were wired to important shell actions and backend validation errors.
-- admin users can now be listed and promoted from the shell, and order status actions are being surfaced in the operational board.
+- o contrato do produto foi rascunhado a partir do novo conceito do projeto;
+- os arquivos de convenção continuam instalados e isolados do escopo da aplicação;
+- documentos de roadmap e TODO estão sendo usados para ordenar o trabalho;
+- a spec guarda-chuva foi dividida em specs e stats de domínio dedicadas;
+- o smoke test do backend passou para health, cardápio, login, criação de pedido e baixa de estoque;
+- o build do frontend passou com Vite;
+- o setup inicial do primeiro admin foi verificado e depois travado;
+- o logging do backend foi integrado aos eventos HTTP, auth, pedidos, admin, websocket e estoque;
+- as regras do shell de UI foram registradas como contrato dedicado para eliminar ambiguidades entre guest e admin;
+- os toasts foram integrados às ações importantes do shell e aos erros de validação do backend;
+- admins agora podem ser listados e promovidos pelo shell, e ações de status do pedido estão expostas no board operacional.
 
-## Commit tracking
+## Controle de commit
 
 - trace_id: `awc-20260602-ui-shell-02`
-- commit status: not done
-- hash (optional, after the commit):
-- message:
-- summary: WA Açaí implementation base extended with centralized logging and a role-aware UI shell contract.
+- status do commit: não feito
+- hash (opcional, após o commit):
+- mensagem:
+- resumo: base de implementação do WA Açaí ampliada com logging centralizado e contrato de shell de UI por perfil.
 
-## Open risks or doubts
+## Riscos ou dúvidas abertas
 
-- the new scope is substantially larger than the previous prototype and will need phased completion;
-- some domain details still need to be implemented in the UI and APIs.
+- o novo escopo é significativamente maior do que o protótipo anterior e vai exigir conclusão em fases;
+- alguns detalhes de domínio ainda precisam ser implementados nas UI e nas APIs.
 
-## Related
+## Relacionados
 
 - [wa-acai.spec](wa-acai.spec.md)
 - [project.stat](project.stat.md)

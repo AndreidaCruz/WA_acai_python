@@ -1,16 +1,16 @@
-# Agent Workflow Policy
+# Política de Fluxo do Agente
 
-- read before changing;
-- understand the contract before changing behavior;
-- work in small steps;
-- validate before advancing;
-- record evidence in the right place;
-- update `.stat` when there is real progress;
-- use `trace_id` to link `.stat` and commit when there is a relevant change;
-- stop and review when the problem asks for a new abstraction;
-- make a clean handoff between sessions.
+- leia antes de alterar;
+- entenda o contrato antes de mudar comportamento;
+- trabalhe em passos pequenos;
+- valide antes de avançar;
+- registre evidências no lugar certo;
+- atualize `.stat` quando houver progresso real;
+- use `trace_id` para ligar `.stat` e commit quando houver uma mudança relevante;
+- pare e revise quando o problema pedir uma nova abstração;
+- faça uma passagem de bastão limpa entre sessões.
 
-## Related
+## Relacionados
 
 - [../specs/project.spec.md](../specs/project.spec.md)
 - [../specs/project.stat.md](../specs/project.stat.md)

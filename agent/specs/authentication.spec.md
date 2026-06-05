@@ -1,27 +1,27 @@
-# Authentication Spec
+# Spec de Autenticação
 
-This spec defines login, logout, registration, and token handling.
+Esta spec define login, logout, registro e tratamento de tokens.
 
-## Scope
+## Escopo
 
-- account registration;
-- login and logout;
-- JWT access token handling;
-- optional refresh token flow;
-- secure password hashing;
-- role-aware access for guest, user, and admin flows.
+- cadastro de conta;
+- login e logout;
+- tratamento de token de acesso JWT;
+- fluxo opcional de refresh token;
+- hash seguro de senha;
+- acesso por perfil para fluxos de convidado, usuário e admin.
 
-## Rules
+## Regras
 
-- passwords must be hashed before persistence;
-- credentials must be validated on the backend;
-- JWT access tokens must protect authenticated routes;
-- guest flows must remain usable without mandatory registration;
-- administrator routes must require authenticated access;
-- user sessions must support account recovery and later account linking for guest orders;
-- the system must expose a one-time admin bootstrap flow when no admin exists.
+- senhas devem ser hasheadas antes da persistência;
+- credenciais devem ser validadas no backend;
+- tokens JWT de acesso devem proteger rotas autenticadas;
+- fluxos de convidado devem continuar utilizáveis sem cadastro obrigatório;
+- rotas administrativas devem exigir acesso autenticado;
+- sessões de usuário devem suportar recuperação de conta e vínculo posterior para pedidos de convidado;
+- o sistema deve expor um fluxo de bootstrap de admin único quando nenhum admin existir.
 
-## Related
+## Relacionados
 
 - [authentication.stat](authentication.stat.md)
 - [accounts.spec](accounts.spec.md)

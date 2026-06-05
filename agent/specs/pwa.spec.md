@@ -1,25 +1,24 @@
-# PWA Spec
+# Spec de PWA
 
-This spec defines the installable mobile app behavior.
+Esta spec define o comportamento do aplicativo instalável para celular e desktop.
 
-## Scope
+## Escopo
 
-- app manifest;
-- offline basics;
-- installability;
-- cached static resources;
-- mobile-first behavior;
-- version refresh behavior.
+- manifesto;
+- instalabilidade;
+- comportamento offline básico;
+- ícones e metadados;
+- experiência mobile-first.
 
-## Rules
+## Regras
 
-- the frontend should support installation as a PWA;
-- static resources should be cached for basic offline support;
-- the interface must work well on smaller screens;
-- installable metadata must be driven by store settings when available.
+- o frontend deve permanecer instalável como PWA;
+- os metadados devem vir das configurações da loja quando aplicável;
+- o app deve continuar usável em mobile;
+- o manifesto e os assets de instalação devem ser mantidos no frontend.
 
-## Related
+## Relacionados
 
 - [pwa.stat](pwa.stat.md)
 - [settings.spec](settings.spec.md)
-- [media.spec](media.spec.md)
+- [ui.spec](ui.spec.md)
