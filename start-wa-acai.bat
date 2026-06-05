@@ -48,7 +48,8 @@ if not exist "frontend\node_modules" (
 )
 
 echo [4/5] Iniciando backend e frontend...
-start "WA Acai Backend" /D "%ROOT%backend" "%VENV_PY%" -m uvicorn src.app.main:app --host 127.0.0.1 --port 8000 --reload
+set "WA_ACAI_DEBUG=1"
+start "WA Acai Backend" /D "%ROOT%backend" "%VENV_PY%" -m src.app.main --debug --host 127.0.0.1 --port 8000
 start "WA Acai Frontend" /D "%ROOT%frontend" cmd /c "npm run dev -- --host 127.0.0.1 --port 5173"
 
 echo [5/5] Aguardando a interface subir e abrindo o navegador...

@@ -1,6 +1,6 @@
 # Project Stat
 
-Last update date: 2026-06-01
+Last update date: 2026-06-02
 
 ## Current state
 
@@ -12,9 +12,13 @@ Last update date: 2026-06-01
 - the project and folder overview entry points are aligned to the standard convention;
 - the product implementation was reset to prepare for the new delivery-style scope;
 - the WA Açaí domain now has a richer spec/stat/linkage set and a roadmap entry point;
-- the new implementation base is now bootstrapped and smoke-tested.
+- the new implementation base is now bootstrapped and smoke-tested;
 - the backend now lives under `backend/src`;
-- the first-run admin setup flow is implemented and smoke-tested.
+- the first-run admin setup flow is implemented and smoke-tested;
+- application logging is centralized and debug runs write to `logs/wa-acai.log`;
+- the launcher now passes `--debug` to the backend entrypoint.
+- a dedicated UI shell contract now defines role-aware navigation, cart entry, and admin visibility.
+- toast alerts now surface important validation and action feedback in the shell.
 
 ## Pending items
 
@@ -23,8 +27,11 @@ Last update date: 2026-06-01
 - align the WA Açaí implementation with the new delivery-style scope;
 - consolidate the adequation roadmap in the new update flow;
 - keep the new roadmap and TODO synchronized with the spec and stat;
-- keep implementation progress synchronized with the domain stats.
-- keep the backend `src` layout and the one-time setup flow stable.
+- keep implementation progress synchronized with the domain stats;
+- keep the backend `src` layout and the one-time setup flow stable;
+- keep logging safe, centralized, and free of secrets.
+- keep the UI shell aligned with backend role validation.
+- keep toast alerts reusable and consistent across the shell.
 
 ## Evidence / validation
 
@@ -35,16 +42,19 @@ Last update date: 2026-06-01
 - convention update flow and overview files added for the current bootstrap;
 - previous prototype implementation removed from backend and frontend;
 - the next implementation plan is now being captured in `docs/plans/`;
-- backend and frontend base restored and smoke-tested.
-- backend moved to `backend/src` and the one-time admin setup flow verified.
+- backend and frontend base restored and smoke-tested;
+- backend moved to `backend/src` and the one-time admin setup flow verified;
+- backend logging was centralized and validated in debug mode.
+- UI shell contract was created to remove guest/admin ambiguity from the navigation layer.
+- toast notifications were added for important shell actions and validation errors.
 
 ## Commit tracking
 
-- trace_id: `awc-20260601-project-implementation-02`
+- trace_id: `awc-20260602-ui-shell-01`
 - commit status: not done
 - hash (optional, after the commit):
 - message:
-- summary: project implementation base rebuilt toward the new WA Açaí delivery-style scope with backend src layout and first-run setup.
+- summary: project implementation base extended with centralized logging, debug file output, launcher integration, and a dedicated UI shell contract.
 
 ## Recommended next step
 

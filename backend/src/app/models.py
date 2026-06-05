@@ -199,6 +199,7 @@ class OrderItemComplement(Base):
     stock_product_name: Mapped[str] = mapped_column(String(120), nullable=False)
     quantity_consumed: Mapped[float] = mapped_column(Float, default=1.0, nullable=False)
     extra_price: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    combo_part_index: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     order_item: Mapped[OrderItem] = relationship(back_populates="complements")
 

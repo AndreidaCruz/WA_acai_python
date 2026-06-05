@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+import logging
 
 from fastapi import HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -14,6 +15,7 @@ from .models import Role, User
 settings = get_settings()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 bearer_scheme = HTTPBearer(auto_error=False)
+logger = logging.getLogger(__name__)
 
 
 def hash_password(password: str) -> str:
@@ -40,6 +42,7 @@ def decode_token(token: str) -> dict:
     try:
         return jwt.decode(token, settings.secret_key, algorithms=["HS256"])
     except JWTError as exc:  # pragma: no cover - translated to HTTP error
+        logger.warning("token decode failed")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token") from exc
 
 
@@ -48,15 +51,18 @@ def get_current_user(
     db: Session,
 ) -> User:
     if credentials is None:
+        logger.warning("authentication required but no credentials provided")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
     payload = decode_token(credentials.credentials)
     user = db.get(User, int(payload["sub"]))
     if user is None or not user.active:
+        logger.warning("token user not found or inactive")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
 
 
 def require_admin(user: User) -> User:
     if user.role != Role.admin:
+        logger.warning("admin access denied user_id=%s role=%s", user.id, user.role.value)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return user

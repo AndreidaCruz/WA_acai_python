@@ -50,8 +50,10 @@ Essa é a forma mais simples de publicar o app sem que a banca precise baixar de
 Use:
 
 ```bash
-uvicorn src.app.main:app --host 0.0.0.0 --port $PORT
+python -m src.app.main --host 0.0.0.0 --port $PORT
 ```
+
+Se quiser habilitar logs em arquivo no ambiente de desenvolvimento, inicie com `--debug`. Nesse modo, os eventos ficam em `logs/wa-acai.log` além do console.
 
 ## Observação importante
 

@@ -46,6 +46,8 @@ This directory stores the target project's normative contracts that the agent mu
 - `realtime.stat.md`
 - `pwa.spec.md`
 - `pwa.stat.md`
+- `ui.spec.md`
+- `ui.stat.md`
 - `security.spec.md`
 - `security.stat.md`
 - `admin.spec.md`

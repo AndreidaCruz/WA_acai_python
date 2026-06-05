@@ -4,10 +4,10 @@ This TODO keeps the next implementation steps visible while the new contract is 
 
 ## Immediate
 
-- define the backend folder structure for the new architecture;
-- define the database models and migration baseline;
-- choose the first authentication slice to implement;
-- confirm the initial seed data for products and stock.
+- finish the role-aware UI shell and make admin/customer navigation unambiguous;
+- complete the operational orders board with status updates and refresh actions;
+- complete customer user listing and promotion-to-admin controls;
+- keep toast notifications consistent across login, admin, checkout, and order flows.
 
 ## Domain priorities
 
@@ -18,16 +18,14 @@ This TODO keeps the next implementation steps visible while the new contract is 
 
 ## Next
 
-- create the product, order, stock, and settings services;
-- add the first API routes and schemas;
-- create the React app shell with routing and layout;
-- wire the public catalog to backend data.
+- keep refining the catalog-to-cart composer flow so the user does not need long scrolling;
+- keep admin sections split by responsibility instead of bundling every action into one page;
+- extend tracking so the cart and order history stay aligned after checkout.
 
 ## Later
 
-- add admin stock adjustments and movement history;
-- add guest order capture and order-number display;
-- add WebSocket channels for order and dashboard updates;
+- add richer movement history views for inventory auditing;
+- add WebSocket channels for live order and dashboard updates;
 - add PWA metadata and offline support.
 
 ## Links

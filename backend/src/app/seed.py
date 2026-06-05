@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import logging
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from .models import Product, ProductComplement, Recipe, StockProduct, StoreSettings
+
+logger = logging.getLogger(__name__)
 
 
 def seed_data(db: Session) -> None:
@@ -47,17 +51,34 @@ def seed_data(db: Session) -> None:
         "Açaí 500ml": (17.0, {"Açaí Tradicional": 500.0}, "/products/acai-500ml.png"),
         "Açaí 700ml": (22.0, {"Açaí Tradicional": 700.0}, "/products/acai-700ml.png"),
         "Milk Shake": (18.0, {}, "/products/milk-shake.png"),
-        "Combo": (29.0, {}, "/products/combo.png"),
+        "Combo": (29.0, {"Açaí Tradicional": 1000.0}, "/products/combo.png"),
     }
     existing_products = {item.name: item for item in db.scalars(select(Product)).all()}
+    for bad_name in {"AÃ§aÃ­ 300ml", "AÃ§aÃ­ 500ml", "AÃ§aÃ­ 700ml", "AÃƒÂ§aÃƒÂ­ 300ml", "AÃƒÂ§aÃƒÂ­ 500ml", "AÃƒÂ§aÃƒÂ­ 700ml"}:
+        bad_product = existing_products.get(bad_name)
+        if bad_product is not None:
+            bad_product.active = False
+            bad_product.available = False
+
+    for hidden_name in {"Açaí 300ml", "Açaí 500ml", "Açaí 700ml"}:
+        hidden_product = existing_products.get(hidden_name)
+        if hidden_product is not None:
+            hidden_product.active = False
+            hidden_product.available = False
+
     for name, (price, recipes, image_url) in product_items.items():
         product = existing_products.get(name)
         if product is None:
-            product = Product(name=name, description=f"Produto {name}", price=price, image_url=image_url)
+            description = "Combo com dois açaís de 500ml" if name == "Combo" else f"Produto {name}"
+            product = Product(name=name, description=description, price=price, image_url=image_url)
             db.add(product)
             db.flush()
         product.price = price
         product.image_url = image_url
+        product.active = True
+        product.available = True
+        if name == "Combo":
+            product.description = "Combo com dois açaís de 500ml"
         stock_lookup = {item.name: item for item in db.scalars(select(StockProduct)).all()}
         for stock_name, amount in recipes.items():
             stock = stock_lookup[stock_name]
@@ -65,9 +86,22 @@ def seed_data(db: Session) -> None:
                 db.add(Recipe(product_id=product.id, stock_product_id=stock.id, quantity_consumed=amount))
 
     complement_map = {
-        "Açaí 300ml": ["Morango", "Banana", "Leite em pó", "Granola", "Paçoca", "Amendoim granulado", "Ovomaltine", "Leite condensado", "Creme de avelã (Nutella)", "Creme de Ninho", "Creme de Cupuaçu", "Bis picado", "Confete (M&M's)", "Canudinho de wafer"],
-        "Açaí 500ml": ["Morango", "Banana", "Leite em pó", "Granola", "Paçoca", "Amendoim granulado", "Ovomaltine", "Leite condensado", "Creme de avelã (Nutella)", "Creme de Ninho", "Creme de Cupuaçu", "Bis picado", "Confete (M&M's)", "Canudinho de wafer"],
-        "Açaí 700ml": ["Morango", "Banana", "Leite em pó", "Granola", "Paçoca", "Amendoim granulado", "Ovomaltine", "Leite condensado", "Creme de avelã (Nutella)", "Creme de Ninho", "Creme de Cupuaçu", "Bis picado", "Confete (M&M's)", "Canudinho de wafer"],
+        "Combo": [
+            "Morango",
+            "Banana",
+            "Leite em pó",
+            "Granola",
+            "Paçoca",
+            "Amendoim granulado",
+            "Ovomaltine",
+            "Leite condensado",
+            "Creme de avelã (Nutella)",
+            "Creme de Ninho",
+            "Creme de Cupuaçu",
+            "Bis picado",
+            "Confete (M&M's)",
+            "Canudinho de wafer",
+        ],
     }
     for product_name, complements in complement_map.items():
         product = existing_products.get(product_name)
@@ -87,3 +121,4 @@ def seed_data(db: Session) -> None:
                 )
 
     db.commit()
+    logger.info("seed data ensured for store, stock, products and complements")

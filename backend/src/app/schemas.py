@@ -35,6 +35,10 @@ class UserRead(BaseModel):
     role: Role
 
 
+class UserRoleUpdate(BaseModel):
+    role: Role
+
+
 class ProductBase(BaseModel):
     name: str
     description: str | None = None
@@ -122,17 +126,22 @@ class OrderItemComplementCreate(BaseModel):
     quantity_consumed: float = 1.0
 
 
+class OrderItemComboPartCreate(BaseModel):
+    complements: list[OrderItemComplementCreate] = Field(default_factory=list)
+
+
 class OrderItemCreate(BaseModel):
     product_id: int
     quantity: int = Field(ge=1)
     complements: list[OrderItemComplementCreate] = Field(default_factory=list)
+    combo_parts: list[OrderItemComboPartCreate] = Field(default_factory=list)
 
 
 class OrderCreate(BaseModel):
     user_id: int | None = None
-    customer_name: str
-    phone: str
-    address: str
+    customer_name: str = Field(min_length=1)
+    phone: str = Field(min_length=1)
+    address: str = Field(min_length=1)
     observations: str | None = None
     delivery_fee: float = 0.0
     items: list[OrderItemCreate] = Field(default_factory=list)
@@ -147,6 +156,18 @@ class OrderItemRead(BaseModel):
     quantity: int
     unit_price: float
     total_price: float
+    complements: list["OrderItemComplementRead"] = Field(default_factory=list)
+
+
+class OrderItemComplementRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    stock_product_id: int
+    stock_product_name: str
+    quantity_consumed: float
+    extra_price: float
+    combo_part_index: int | None
 
 
 class OrderRead(BaseModel):

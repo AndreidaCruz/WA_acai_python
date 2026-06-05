@@ -1,41 +1,99 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import api from '../services/api'
 import SectionTitle from '../components/SectionTitle'
 import { useAuth } from '../contexts/AuthContext'
+import { emitNotification } from '../utils/notifications'
+
+const ADMIN_SECTIONS = [
+  { id: 'overview', label: 'Visão geral' },
+  { id: 'stock', label: 'Estoque' },
+  { id: 'users', label: 'Usuários' },
+  { id: 'settings', label: 'Configurações' },
+]
 
 export default function AdminPage() {
   const { user, loading: authLoading, logout, login: authLogin, setSession } = useAuth()
+  const isAdmin = user?.role === 'admin'
   const [setupStatus, setSetupStatus] = useState({ needs_setup: false })
   const [setupForm, setSetupForm] = useState({ name: 'Administrador', email: '', password: '' })
   const [credentials, setCredentials] = useState({ email: '', password: '' })
   const [dashboard, setDashboard] = useState(null)
   const [stock, setStock] = useState([])
   const [orders, setOrders] = useState([])
+  const [users, setUsers] = useState([])
+  const [activeSection, setActiveSection] = useState('overview')
+  const [lastRefresh, setLastRefresh] = useState(null)
   const [message, setMessage] = useState('')
 
   async function loadAdminData() {
-    const [dash, stockRes, ordersRes] = await Promise.all([
+    const [dash, stockRes, ordersRes, usersRes] = await Promise.all([
       api.get('/api/admin/dashboard'),
       api.get('/api/admin/stock'),
       api.get('/api/admin/orders'),
+      api.get('/api/admin/users'),
     ])
     setDashboard(dash.data)
     setStock(stockRes.data)
     setOrders(ordersRes.data)
+    setUsers(usersRes.data)
+    setLastRefresh(new Date())
   }
 
   async function bootstrapAdmin() {
     setMessage('')
-    const { data } = await api.post('/api/auth/bootstrap-admin', setupForm)
-    await setSession(data.access_token)
-    setSetupStatus({ needs_setup: false })
-    setMessage('Admin inicial configurado com sucesso.')
+    try {
+      const { data } = await api.post('/api/auth/bootstrap-admin', setupForm)
+      await setSession(data.access_token)
+      setSetupStatus({ needs_setup: false })
+      setMessage('Admin inicial configurado com sucesso.')
+      emitNotification({
+        type: 'success',
+        title: 'Admin inicial criado',
+        description: 'O primeiro administrador foi configurado com sucesso.',
+      })
+    } catch (error) {
+      setMessage('Não foi possível criar o admin inicial.')
+      if (!error?.response) {
+        emitNotification({
+          type: 'error',
+          title: 'Falha no setup',
+          description: 'Não foi possível criar o admin inicial.',
+        })
+      }
+    }
   }
 
   async function login() {
     setMessage('')
-    await authLogin(credentials.email, credentials.password)
-    setMessage('Autenticado como admin.')
+    try {
+      const sessionUser = await authLogin(credentials.email, credentials.password)
+      if (sessionUser.role !== 'admin') {
+        const text = 'Usuário autenticado, mas sem permissão de admin.'
+        setMessage(text)
+        emitNotification({
+          type: 'warning',
+          title: 'Permissão insuficiente',
+          description: text,
+        })
+        return
+      }
+      setActiveSection('overview')
+      setMessage('Autenticado como admin.')
+      emitNotification({
+        type: 'success',
+        title: 'Login administrativo',
+        description: 'A sessão admin foi validada com sucesso.',
+      })
+    } catch (error) {
+      setMessage('Não foi possível entrar com esses dados.')
+      if (!error?.response) {
+        emitNotification({
+          type: 'error',
+          title: 'Usuário inválido',
+          description: 'Não foi possível entrar com esses dados.',
+        })
+      }
+    }
   }
 
   useEffect(() => {
@@ -43,32 +101,287 @@ export default function AdminPage() {
   }, [])
 
   useEffect(() => {
-    if (!user) {
+    if (!isAdmin) {
       setDashboard(null)
       setStock([])
       setOrders([])
+      setUsers([])
       return
     }
     loadAdminData().catch(() => null)
-  }, [user])
+  }, [isAdmin])
+
+  useEffect(() => {
+    if (!isAdmin) return undefined
+    const interval = window.setInterval(() => {
+      loadAdminData().catch(() => null)
+    }, 30000)
+    return () => window.clearInterval(interval)
+  }, [isAdmin])
 
   async function adjustStock(id, delta) {
-    const { data } = await api.patch(`/api/admin/stock/${id}`, null, { params: { quantity_delta: delta } })
-    setStock((current) => current.map((item) => (item.id === id ? data : item)))
+    try {
+      const { data } = await api.patch(`/api/admin/stock/${id}`, null, { params: { quantity_delta: delta } })
+      setStock((current) => current.map((item) => (item.id === id ? data : item)))
+      await loadAdminData()
+      emitNotification({
+        type: 'success',
+        title: 'Estoque atualizado',
+        description: `${data.name} ajustado em ${delta > 0 ? '+' : ''}${delta}.`,
+      })
+    } catch (error) {
+      setMessage('Não foi possível atualizar o estoque.')
+      if (!error?.response) {
+        emitNotification({
+          type: 'error',
+          title: 'Erro no estoque',
+          description: 'Não foi possível atualizar o estoque.',
+        })
+      }
+    }
+  }
+
+  async function promoteUser(userId) {
+    try {
+      const { data } = await api.patch(`/api/admin/users/${userId}/role`, { role: 'admin' })
+      await loadAdminData()
+      emitNotification({
+        type: 'success',
+        title: 'Usuário promovido',
+        description: `${data.name} agora tem acesso de admin.`,
+      })
+    } catch (error) {
+      setMessage('Não foi possível promover o usuário.')
+      if (!error?.response) {
+        emitNotification({
+          type: 'error',
+          title: 'Falha de permissão',
+          description: 'Não foi possível promover o usuário.',
+        })
+      }
+    }
+  }
+
+  const lowStock = useMemo(() => dashboard?.low_stock || [], [dashboard])
+
+  function renderSection() {
+    if (!dashboard) return null
+
+    if (activeSection === 'stock') {
+      return (
+        <>
+          <SectionTitle
+            eyebrow="Estoque"
+            title="Produtos de estoque"
+            description="Ajuste a quantidade e observe quais itens estão com nível crítico."
+          />
+          <div className="stack">
+            {stock.map((item) => (
+              <article key={item.id} className="card card--compact">
+                <div className="row row--space">
+                  <div>
+                    <strong>{item.name}</strong>
+                    <p className="muted">
+                      {item.quantity_current} {item.unit_measure}
+                    </p>
+                  </div>
+                  <div className="row">
+                    <button type="button" className="button button--ghost" onClick={() => adjustStock(item.id, 10)}>
+                      +10
+                    </button>
+                    <button type="button" className="button button--ghost" onClick={() => adjustStock(item.id, -10)}>
+                      -10
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
+      )
+    }
+
+    if (activeSection === 'users') {
+      return (
+        <>
+          <SectionTitle
+            eyebrow="Usuários"
+            title="Controle de acesso"
+            description="Promova clientes cadastrados a admin quando necessário."
+          />
+          <div className="stack">
+            {users.map((item) => (
+              <article key={item.id} className="card card--compact">
+                <div className="row row--space">
+                  <div>
+                    <strong>{item.name}</strong>
+                    <p className="muted">{item.email}</p>
+                    <span className="chip">{item.role}</span>
+                  </div>
+                  {item.role !== 'admin' ? (
+                    <button type="button" className="button button--ghost" onClick={() => promoteUser(item.id)}>
+                      Promover a admin
+                    </button>
+                  ) : null}
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
+      )
+    }
+
+    if (activeSection === 'settings') {
+      return (
+        <>
+          <SectionTitle
+            eyebrow="Configurações"
+            title="Resumo da loja"
+            description="Informações principais carregadas do backend."
+          />
+          <div className="stats-grid">
+            <div className="stat">
+              <strong>{dashboard.settings.nome_loja}</strong>
+              <span>Loja</span>
+            </div>
+            <div className="stat">
+              <strong>{dashboard.settings.loja_aberta ? 'Aberta' : 'Fechada'}</strong>
+              <span>Status</span>
+            </div>
+            <div className="stat">
+              <strong>{dashboard.settings.taxa_entrega?.toFixed?.(2) || '0.00'}</strong>
+              <span>Taxa de entrega</span>
+            </div>
+          </div>
+        </>
+      )
+    }
+
+    return (
+      <>
+        <SectionTitle
+          eyebrow="Visão geral"
+          title="Painel administrativo"
+          description="Pedidos, estoque, usuários e configurações em uma navegação separada por função."
+        />
+        <div className="stats-grid">
+          <div className="stat">
+            <strong>{dashboard.orders}</strong>
+            <span>Pedidos</span>
+          </div>
+          <div className="stat">
+            <strong>{lowStock.length}</strong>
+            <span>Baixo estoque</span>
+          </div>
+          <div className="stat">
+            <strong>{users.length}</strong>
+            <span>Usuários</span>
+          </div>
+        </div>
+        {lastRefresh ? <p className="muted">Atualizado às {lastRefresh.toLocaleTimeString()}</p> : null}
+        <SectionTitle eyebrow="Pedidos" title="Últimos pedidos" description="Resumo rápido do fluxo recente." />
+        <div className="stack">
+          {orders.slice(0, 3).map((order) => (
+            <article key={order.id} className="card card--compact">
+              <div className="row row--space">
+                <div>
+                  <strong>{order.number}</strong>
+                  <p className="muted">{order.customer_name}</p>
+                </div>
+                <span className="chip">{order.status}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+        <SectionTitle eyebrow="Alertas" title="Itens críticos" description="Esses ingredientes precisam de atenção." />
+        <div className="stack">
+          {lowStock.length > 0 ? (
+            lowStock.map((item) => (
+              <article key={item.id} className="card card--compact">
+                <div className="row row--space">
+                  <div>
+                    <strong>{item.name}</strong>
+                    <p className="muted">
+                      {item.quantity_current} {item.unit_measure} disponíveis
+                    </p>
+                  </div>
+                  <span className="chip chip--danger">Baixo estoque</span>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p className="muted">Nenhum item em nível crítico agora.</p>
+          )}
+        </div>
+      </>
+    )
+  }
+
+  if (user ? !isAdmin : false) {
+    return (
+      <section className="panel panel--warning">
+        <SectionTitle
+          eyebrow="Acesso negado"
+          title="Este usuário não é administrador"
+          description="O painel administrativo só abre para sessões validadas pelo backend com papel admin."
+        />
+        <button type="button" className="button button--ghost" onClick={logout}>
+          Sair
+        </button>
+      </section>
+    )
   }
 
   return (
-    <section className="panel">
+    <section className="stack">
       {user ? (
-        <div className="row">
-          <SectionTitle eyebrow="Admin" title="Painel administrativo" description="Você já está autenticado." />
-          <button type="button" className="button button--ghost" onClick={logout}>
-            Sair
-          </button>
+        <div className="admin-shell">
+          <aside className="panel admin-shell__nav">
+            <div className="row row--space">
+              <SectionTitle eyebrow="Admin" title="Painel" description="Sessão validada pelo backend." />
+              <button type="button" className="button button--ghost" onClick={logout}>
+                Sair
+              </button>
+            </div>
+            <div className="stack">
+              {ADMIN_SECTIONS.map((section) => (
+                <button
+                  key={section.id}
+                  type="button"
+                  className={`admin-nav-item ${activeSection === section.id ? 'admin-nav-item--active' : ''}`}
+                  onClick={() => setActiveSection(section.id)}
+                >
+                  {section.label}
+                </button>
+              ))}
+            </div>
+            <div className="stats-grid admin-shell__stats">
+              <div className="stat">
+                <strong>{dashboard?.orders || 0}</strong>
+                <span>Pedidos</span>
+              </div>
+              <div className="stat">
+                <strong>{dashboard?.low_stock?.length || 0}</strong>
+                <span>Alertas</span>
+              </div>
+            </div>
+            <button type="button" className="button button--ghost admin-shell__refresh" onClick={() => loadAdminData().catch(() => null)}>
+              Atualizar dados
+            </button>
+          </aside>
+          <div className="stack">
+            {!authLoading && isAdmin && dashboard ? <section className="panel">{renderSection()}</section> : null}
+            {!authLoading && isAdmin ? (
+              <section className="panel">
+                <SectionTitle eyebrow="Pedidos" title="Atalho operacional" description="Os pedidos com ação de status ficam na tela de pedidos." />
+                <p className="muted">Use a seção <strong>Pedidos</strong> na navegação superior para alterar status, aceitar e finalizar pedidos.</p>
+              </section>
+            ) : null}
+          </div>
         </div>
       ) : (
-        <>
-          <SectionTitle eyebrow="Admin" title="Acesso administrativo" description="Login, dashboard e estoque." />
+        <section className="panel">
+          <SectionTitle eyebrow="Admin" title="Acesso administrativo" description="Login, setup inicial e validação de sessão." />
 
           {setupStatus.needs_setup ? (
             <>
@@ -120,63 +433,11 @@ export default function AdminPage() {
               </button>
             </>
           )}
-        </>
+        </section>
       )}
 
       {message ? <p className="success">{message}</p> : null}
 
-      {authLoading ? null : user && dashboard ? (
-        <>
-          <div className="stats-grid">
-            <div className="stat">
-              <strong>{dashboard.orders}</strong>
-              <span>Pedidos</span>
-            </div>
-            <div className="stat">
-              <strong>{dashboard.low_stock.length}</strong>
-              <span>Baixo estoque</span>
-            </div>
-            <div className="stat">
-              <strong>{dashboard.settings.nome_loja}</strong>
-              <span>Loja</span>
-            </div>
-          </div>
-
-          <SectionTitle eyebrow="Estoque" title="Produtos de estoque" />
-          <div className="stack">
-            {stock.map((item) => (
-              <article key={item.id} className="card card--compact">
-                <div className="row">
-                  <div>
-                    <strong>{item.name}</strong>
-                    <p className="muted">
-                      {item.quantity_current} {item.unit_measure}
-                    </p>
-                  </div>
-                  <div className="row">
-                    <button type="button" className="button button--ghost" onClick={() => adjustStock(item.id, 10)}>
-                      +10
-                    </button>
-                    <button type="button" className="button button--ghost" onClick={() => adjustStock(item.id, -10)}>
-                      -10
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <SectionTitle eyebrow="Pedidos" title="Últimos pedidos" />
-          <div className="stack">
-            {orders.map((order) => (
-              <article key={order.id} className="card card--compact">
-                <strong>{order.number}</strong>
-                <p>{order.customer_name}</p>
-              </article>
-            ))}
-          </div>
-        </>
-      ) : null}
     </section>
   )
 }

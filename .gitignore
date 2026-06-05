@@ -49,3 +49,5 @@ pyvenv.cfg
 Thumbs.db
 frontend-vite.err.log
 frontend-vite.out.log
+logs/*.log
+!logs/.gitkeep

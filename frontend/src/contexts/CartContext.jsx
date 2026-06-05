@@ -13,13 +13,40 @@ export function CartProvider({ children }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
   }, [items])
 
-  function addItem(product) {
+  function addItem(product, complements = [], quantity = 1, options = {}) {
+    const normalizedComplements = complements.map((complement) => ({
+      stock_product_id: complement.stock_product_id,
+      quantity_consumed: complement.quantity_consumed || 1,
+      stock_product: complement.stock_product,
+    }))
+    const normalizedComboParts = (options.comboParts || []).map((part) =>
+      part.map((complement) => ({
+        stock_product_id: complement.stock_product_id,
+        quantity_consumed: complement.quantity_consumed || 1,
+        stock_product: complement.stock_product,
+      })),
+    )
+    const configKey = options.isCombo
+      ? `combo:${JSON.stringify(normalizedComboParts.map((part) => part.map((complement) => complement.stock_product_id)))}`
+      : JSON.stringify(normalizedComplements.map((complement) => complement.stock_product_id))
     setItems((current) => {
-      const found = current.find((item) => item.product.id === product.id)
+      const found = current.find((item) => item.product.id === product.id && item.configKey === configKey)
       if (found) {
-        return current.map((item) => (item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item))
+        return current.map((item) =>
+          item.product.id === product.id && item.configKey === configKey ? { ...item, quantity: item.quantity + quantity } : item,
+        )
       }
-      return [...current, { product, quantity: 1, complements: [] }]
+      return [
+        ...current,
+        {
+          product,
+          quantity,
+          complements: normalizedComplements,
+          comboParts: normalizedComboParts,
+          isCombo: Boolean(options.isCombo),
+          configKey,
+        },
+      ]
     })
   }
 
@@ -42,8 +69,8 @@ export function CartProvider({ children }) {
     )
   }
 
-  function removeItem(productId) {
-    setItems((current) => current.filter((item) => item.product.id !== productId))
+  function removeItem(itemKey) {
+    setItems((current) => current.filter((item) => item.configKey !== itemKey && item.product.id !== itemKey))
   }
 
   function clear() {
@@ -52,6 +79,18 @@ export function CartProvider({ children }) {
 
   const total = useMemo(() => {
     return items.reduce((sum, item) => {
+      if (item.isCombo) {
+        const comboPartsTotal = (item.comboParts || []).reduce((partsSum, part) => {
+          const paidComplements = part.slice(3)
+          const partTotal = paidComplements.reduce(
+            (complementsSum, complement) =>
+              complementsSum + (complement.stock_product?.complement_extra_price || 0) * complement.quantity_consumed,
+            0,
+          )
+          return partsSum + partTotal
+        }, 0)
+        return sum + (item.product.price + comboPartsTotal) * item.quantity
+      }
       const paidComplements = item.complements.slice(3)
       const complementsTotal = paidComplements.reduce(
         (complementsSum, complement) =>

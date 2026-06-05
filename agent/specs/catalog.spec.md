@@ -8,6 +8,7 @@ This spec defines the public storefront and product browsing experience.
 - product cards with image, title, description, and price;
 - cart building;
 - complement selection;
+- product cards must open a focused detail/composer flow for complements and purchase actions;
 - mobile-first storefront behavior.
 
 ## Rules

@@ -17,7 +17,7 @@ Backend:
 
 ```bash
 cd backend
-python -m uvicorn src.app.main:app --reload
+python -m src.app.main --debug --host 127.0.0.1 --port 8000
 ```
 
 Frontend:
@@ -35,6 +35,8 @@ start-wa-acai.bat
 ```
 
 The launcher will create `.venv` if needed, install dependencies, start backend and frontend, and open the browser automatically.
+
+When started with `--debug`, backend logs are written to `logs/wa-acai.log` in addition to the console.
 
 ## Admin access
 

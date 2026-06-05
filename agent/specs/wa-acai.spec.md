@@ -36,6 +36,9 @@ This spec defines the product contract for the WA Açaí application.
 - all stock changes must be recorded as movements;
 - realtime updates must be available for new orders, status changes, and inventory movements;
 - the frontend must be able to work as a PWA.
+- the shell must separate customer and admin navigation clearly, showing `Entrar` when no user is authenticated and showing the authenticated identity when a session exists;
+- the admin shell must expose role-validated operational areas instead of a generic always-visible tab;
+- the cart must remain a dedicated special flow with post-checkout tracking, not a buried list view.
 
 ## Data model guidance
 
@@ -63,6 +66,7 @@ This spec defines the product contract for the WA Açaí application.
 - stock reduction must happen from recipe and complement consumption data stored in the database;
 - admin configuration must be editable without changing source code;
 - uploads must persist file paths, not raw binaries, in the database.
+- critical application events must be logged centrally without secrets, and debug runs must write to `logs/`;
 
 ## Domain map
 
@@ -76,6 +80,7 @@ This spec defines the product contract for the WA Açaí application.
 - [media.spec](media.spec.md)
 - [realtime.spec](realtime.spec.md)
 - [pwa.spec](pwa.spec.md)
+- [ui.spec](ui.spec.md)
 - [security.spec](security.spec.md)
 - [admin.spec](admin.spec.md)
 

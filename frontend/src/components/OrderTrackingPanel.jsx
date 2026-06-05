@@ -1,0 +1,190 @@
+import { useEffect, useMemo, useState } from 'react'
+import api from '../services/api'
+import SectionTitle from './SectionTitle'
+
+const ORDER_STEPS = ['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO', 'SAINDO_PARA_ENTREGA', 'FINALIZADO']
+
+function groupOrderItemComplements(item) {
+  const complements = item.complements || []
+  const hasComboPart = complements.some((complement) => complement.combo_part_index !== null && complement.combo_part_index !== undefined)
+
+  if (!hasComboPart) {
+    return complements.length > 0 ? [{ label: 'Complementos', items: complements }] : []
+  }
+
+  const groups = new Map()
+  complements.forEach((complement) => {
+    const key = complement.combo_part_index ?? 0
+    if (!groups.has(key)) {
+      groups.set(key, [])
+    }
+    groups.get(key).push(complement)
+  })
+
+  return [...groups.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([index, groupItems]) => ({
+      label: `Açaí ${index + 1} de 2`,
+      items: groupItems,
+    }))
+}
+
+export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title = 'Acompanhamento do pedido' }) {
+  const [storedOrderNumber, setStoredOrderNumber] = useState(() => orderNumberProp || localStorage.getItem('waacai-last-order-number') || '')
+  const [order, setOrder] = useState(null)
+
+  const orderNumber = orderNumberProp || storedOrderNumber
+
+  useEffect(() => {
+    if (orderNumberProp) {
+      setStoredOrderNumber(orderNumberProp)
+      return
+    }
+    setStoredOrderNumber(localStorage.getItem('waacai-last-order-number') || '')
+  }, [orderNumberProp])
+
+  const currentOrder = order
+
+  async function refreshTracking() {
+    if (!orderNumber) return
+    try {
+      const { data } = await api.get(`/api/orders/track/${orderNumber}`)
+      setOrder(data)
+    } catch {
+      setOrder(null)
+    }
+  }
+
+  useEffect(() => {
+    if (!orderNumber) return undefined
+
+    let active = true
+    refreshTracking().then(() => {
+      if (!active) return
+    })
+    const interval = window.setInterval(refreshTracking, 5000)
+
+    return () => {
+      active = false
+      window.clearInterval(interval)
+    }
+  }, [orderNumber])
+
+  if (!orderNumber) {
+    return null
+  }
+
+  if (!currentOrder) {
+    return (
+      <section className="panel">
+        <SectionTitle eyebrow="Acompanhamento" title="Em preparo" description="Seu pedido está sendo acompanhado em tempo real." />
+        <div className="row row--space">
+          <strong>{orderNumber}</strong>
+          <button type="button" className="button button--ghost" onClick={() => refreshTracking().catch(() => null)}>
+            Atualizar agora
+          </button>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section className="panel">
+      <SectionTitle
+        eyebrow="Acompanhamento"
+        title={`Pedido ${currentOrder.number}`}
+        description="Confira exatamente o que foi pedido antes da produção avançar."
+      />
+      <div className="stats-grid">
+        <div className="stat">
+          <strong>{currentOrder.status}</strong>
+          <span>Status</span>
+        </div>
+        <div className="stat">
+          <strong>R$ {currentOrder.total.toFixed(2)}</strong>
+          <span>Total</span>
+        </div>
+        <div className="stat">
+          <strong>{currentOrder.items?.length || 0}</strong>
+          <span>Itens</span>
+        </div>
+      </div>
+
+      <div className="card card--compact">
+        <div className="row row--space">
+          <div>
+            <strong>{currentOrder.customer_name}</strong>
+            <p className="muted">{currentOrder.phone}</p>
+            <small>{currentOrder.address}</small>
+          </div>
+          <div className="stack stack--tight">
+            <strong>R$ {currentOrder.total.toFixed(2)}</strong>
+            <span className="muted">Total do pedido</span>
+          </div>
+        </div>
+        {currentOrder.observations ? <p className="muted">Observações: {currentOrder.observations}</p> : null}
+      </div>
+
+      <div className="stack">
+        {(currentOrder.items || []).map((item) => {
+          const complementGroups = groupOrderItemComplements(item)
+
+          return (
+            <article key={item.id} className="card card--compact">
+              <div className="row row--space">
+                <div>
+                  <strong>{item.product_name}</strong>
+                  <p className="muted">Qtd: {item.quantity}</p>
+                </div>
+                <div className="stack stack--tight">
+                  <strong>R$ {item.total_price.toFixed(2)}</strong>
+                  <span className="muted">R$ {item.unit_price.toFixed(2)} cada</span>
+                </div>
+              </div>
+
+              {complementGroups.length > 0 ? (
+                <div className="stack">
+                  {complementGroups.map((group) => (
+                    <div key={`${item.id}-${group.label}`} className="stack">
+                      <span className="muted">{group.label}</span>
+                      <div className="chip-row wrap">
+                        {group.items.map((complement) => {
+                          const isFree = complement.extra_price === 0
+                          return (
+                            <span key={complement.id} className="chip">
+                              {complement.stock_product_name} x{complement.quantity_consumed} {isFree ? '• grátis' : `• +R$ ${complement.extra_price.toFixed(2)}`}
+                            </span>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </article>
+          )
+        })}
+      </div>
+
+      <div className="chip-row wrap">
+        {ORDER_STEPS.map((step) => {
+          const isCurrent = currentOrder.status === step
+          const currentIndex = ORDER_STEPS.indexOf(currentOrder.status)
+          const stepIndex = ORDER_STEPS.indexOf(step)
+          const completed = currentIndex > stepIndex
+          return (
+            <span key={step} className={`chip ${isCurrent ? 'chip--selected' : ''} ${completed ? 'chip--success' : ''}`}>
+              {step}
+            </span>
+          )
+        })}
+      </div>
+      <div className="row row--space">
+        <small className="muted">Atualize o pedido para acompanhar a produção sem precisar recarregar a página.</small>
+        <button type="button" className="button button--ghost" onClick={() => refreshTracking().catch(() => null)}>
+          Atualizar agora
+        </button>
+      </div>
+    </section>
+  )
+}
