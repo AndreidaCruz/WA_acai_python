@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import api from '../services/api'
 import SectionTitle from './SectionTitle'
@@ -47,7 +48,7 @@ function groupOrderItemComplements(item) {
     }))
 }
 
-export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title = 'Acompanhamento do pedido' }) {
+export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title = 'Acompanhamento do pedido', compact = false }) {
   const [storedOrderNumber, setStoredOrderNumber] = useState(() => orderNumberProp || localStorage.getItem('waacai-last-order-number') || '')
   const [order, setOrder] = useState(() => loadCachedOrder())
 
@@ -94,6 +95,21 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
 
   if (!orderNumber) {
     return null
+  }
+
+  if (compact) {
+    return (
+      <div className="tracking-topbar">
+        <Link to="/cart#tracking" className={`tracking-nav-link nav-link--with-icon ${currentOrder ? 'tracking-nav-link--active' : ''}`}>
+          <span className="nav-link__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+              <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V5Zm5 1.2v11.6h2.2V6.2H9Zm3.2 0v11.6H15V6.2h-2.8Z" />
+            </svg>
+          </span>
+          <span>Acompanhamento</span>
+        </Link>
+      </div>
+    )
   }
 
   if (!currentOrder) {

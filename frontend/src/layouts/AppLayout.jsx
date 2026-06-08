@@ -2,6 +2,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useCart } from '../contexts/CartContext'
 import Toaster from '../components/Toaster'
+import OrderTrackingPanel from '../components/OrderTrackingPanel'
 
 export default function AppLayout({ children }) {
   const { user, logout } = useAuth()
@@ -26,6 +27,7 @@ export default function AppLayout({ children }) {
         </Link>
         <nav className="nav nav--primary">
           <NavLink to="/">Cardápio</NavLink>
+          <OrderTrackingPanel compact />
           {isAdmin ? <NavLink to="/orders">Pedidos</NavLink> : null}
           {isAdmin ? <NavLink to="/admin">Admin</NavLink> : null}
           {isAdmin ? <NavLink to="/settings">Configurações</NavLink> : null}

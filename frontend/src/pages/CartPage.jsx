@@ -293,7 +293,7 @@ export default function CartPage() {
       </section>
 
       {currentOrder ? (
-        <section className="panel">
+        <section className="panel" id="tracking">
           <SectionTitle
             eyebrow="Acompanhamento"
             title={`Pedido ${currentOrder.number}`}

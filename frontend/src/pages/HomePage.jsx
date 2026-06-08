@@ -267,8 +267,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <OrderTrackingPanel title="Seu pedido salvo" />
-
       {message ? <p className="success">{message}</p> : null}
 
       {selectedProduct ? (
