@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import SectionTitle from '../components/SectionTitle'
-import OrderTrackingPanel from '../components/OrderTrackingPanel'
 import { useCart } from '../contexts/CartContext'
 import { emitNotification } from '../utils/notifications'
 
@@ -36,12 +35,34 @@ export default function HomePage() {
   const [comboStep, setComboStep] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [message, setMessage] = useState('')
+  const [catalogError, setCatalogError] = useState('')
   const [composerDrafts, setComposerDrafts] = useState(() => loadComposerDrafts())
   const [stagedItems, setStagedItems] = useState(() => loadComposerStagedItems())
   const suppressDraftPersistRef = useRef(false)
 
   useEffect(() => {
-    api.get('/api/catalog').then(({ data }) => setCatalog(data)).finally(() => setLoading(false))
+    let active = true
+
+    async function loadCatalog() {
+      setLoading(true)
+      try {
+        const { data } = await api.get('/api/catalog')
+        if (!active) return
+        setCatalog(data)
+        setCatalogError('')
+      } catch {
+        if (!active) return
+        setCatalogError('Não foi possível carregar o cardápio agora. Tente novamente em instantes.')
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+
+    loadCatalog()
+
+    return () => {
+      active = false
+    }
   }, [])
 
   useEffect(() => {
@@ -225,6 +246,15 @@ export default function HomePage() {
 
   return (
     <div className="page-grid">
+      {catalogError ? (
+        <section className="panel panel--warning">
+          <SectionTitle eyebrow="Atenção" title="Cardápio indisponível" description={catalogError} />
+          <button type="button" className="button button--ghost" onClick={() => window.location.reload()}>
+            Tentar novamente
+          </button>
+        </section>
+      ) : null}
+
       <section className="hero panel">
         <SectionTitle
           eyebrow="Storefront"
@@ -404,7 +434,13 @@ export default function HomePage() {
                       Continuar escolhendo
                     </button>
                     <button type="button" className="button" onClick={addConfiguredProduct}>
-                      {stagedItemsCount > 0 ? 'Adicionar tudo ao carrinho' : isComboProduct ? (comboStep === 0 ? 'Próximo açaí' : 'Adicionar combo ao carrinho') : 'Adicionar ao carrinho'}
+                      {stagedItemsCount > 0
+                        ? 'Adicionar tudo ao carrinho'
+                        : isComboProduct
+                          ? comboStep === 0
+                            ? 'Próximo açaí'
+                            : 'Adicionar combo ao carrinho'
+                          : 'Adicionar ao carrinho'}
                     </button>
                   </div>
                 </div>
