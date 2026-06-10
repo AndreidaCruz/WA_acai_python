@@ -24,6 +24,15 @@ function loadComposerStagedItems() {
   }
 }
 
+function normalizeCatalog(data) {
+  const safe = data && typeof data === 'object' ? data : {}
+  return {
+    products: Array.isArray(safe.products) ? safe.products : [],
+    stock: Array.isArray(safe.stock) ? safe.stock : [],
+    settings: safe.settings && typeof safe.settings === 'object' ? safe.settings : {},
+  }
+}
+
 export default function HomePage() {
   const navigate = useNavigate()
   const { items, addItem } = useCart()
@@ -48,7 +57,7 @@ export default function HomePage() {
       try {
         const { data } = await api.get('/api/catalog')
         if (!active) return
-        setCatalog(data)
+        setCatalog(normalizeCatalog(data))
         setCatalogError('')
       } catch {
         if (!active) return
@@ -73,8 +82,11 @@ export default function HomePage() {
     localStorage.setItem(COMPOSER_STAGED_ITEMS_KEY, JSON.stringify(stagedItems))
   }, [stagedItems])
 
-  const complementCandidates = useMemo(() => catalog.stock.filter((item) => item.available_for_complement), [catalog.stock])
-  const stockById = useMemo(() => new Map(catalog.stock.map((item) => [item.id, item])), [catalog.stock])
+  const stockList = Array.isArray(catalog.stock) ? catalog.stock : []
+  const productList = Array.isArray(catalog.products) ? catalog.products : []
+  const settings = catalog.settings && typeof catalog.settings === 'object' ? catalog.settings : {}
+  const complementCandidates = useMemo(() => stockList.filter((item) => item.available_for_complement), [stockList])
+  const stockById = useMemo(() => new Map(stockList.map((item) => [item.id, item])), [stockList])
   const selectedComplements = useMemo(
     () => selectedComplementIds.map((id) => stockById.get(id)).filter(Boolean),
     [selectedComplementIds, stockById],
@@ -258,15 +270,15 @@ export default function HomePage() {
       <section className="hero panel">
         <SectionTitle
           eyebrow="Storefront"
-          title={catalog.settings?.nome_loja || 'WA Açaí'}
-          description={catalog.settings?.slogan || 'Cardápio, pedidos e estoque com controle administrativo'}
+          title={settings.nome_loja || 'WA Açaí'}
+          description={settings.slogan || 'Cardápio, pedidos e estoque com controle administrativo'}
         />
         <div className="hero-grid">
           <div>
-            <p className="muted">{catalog.settings?.descricao_loja}</p>
+            <p className="muted">{settings.descricao_loja}</p>
             <div className="chip-row">
-              <span className="chip">{catalog.settings?.loja_aberta ? 'Loja aberta' : 'Loja fechada'}</span>
-              <span className="chip">{catalog.settings?.tempo_medio_entrega || 'Entrega rápida'}</span>
+              <span className="chip">{settings.loja_aberta ? 'Loja aberta' : 'Loja fechada'}</span>
+              <span className="chip">{settings.tempo_medio_entrega || 'Entrega rápida'}</span>
               <span className="chip">{cartCount} no carrinho</span>
             </div>
           </div>
@@ -276,7 +288,7 @@ export default function HomePage() {
       <section className="panel">
         <SectionTitle eyebrow="Cardápio" title="Produtos comerciais" description="Clique em um produto para montar o pedido sem rolar a tela inteira." />
         <div className="card-grid">
-          {catalog.products.map((product) => (
+          {productList.map((product) => (
             <article key={product.id} className="card card--clickable">
               <button type="button" className="card__button-reset" onClick={() => openComposer(product)}>
                 <div className="card__image-shell">
