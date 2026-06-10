@@ -97,6 +97,7 @@ export default function HomePage() {
   const composerExtraTotal = selectedPaidComplements.reduce((sum, stockProduct) => sum + (stockProduct?.complement_extra_price || 0), 0)
   const stagedItemsCount = stagedItems.length
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  const hasProducts = productList.length > 0
 
   function persistDraft(nextProduct, draft) {
     if (!nextProduct) return
@@ -287,26 +288,38 @@ export default function HomePage() {
 
       <section className="panel">
         <SectionTitle eyebrow="Cardápio" title="Produtos comerciais" description="Clique em um produto para montar o pedido sem rolar a tela inteira." />
-        <div className="card-grid">
-          {productList.map((product) => (
-            <article key={product.id} className="card card--clickable">
-              <button type="button" className="card__button-reset" onClick={() => openComposer(product)}>
-                <div className="card__image-shell">
-                  <div
-                    className="card__image"
-                    style={product.image_url ? { backgroundImage: `url(${product.image_url})` } : undefined}
-                  />
-                </div>
-                <h3>{product.name}</h3>
-                <p>{product.description}</p>
-                <div className="row">
-                  <strong>R$ {product.price.toFixed(2)}</strong>
-                  <span className="button">Montar</span>
-                </div>
-              </button>
-            </article>
-          ))}
-        </div>
+        {hasProducts ? (
+          <div className="card-grid">
+            {productList.map((product) => (
+              <article key={product.id} className="card card--clickable">
+                <button type="button" className="card__button-reset" onClick={() => openComposer(product)}>
+                  <div className="card__image-shell">
+                    <div
+                      className="card__image"
+                      style={product.image_url ? { backgroundImage: `url(${product.image_url})` } : undefined}
+                    />
+                  </div>
+                  <h3>{product.name}</h3>
+                  <p>{product.description}</p>
+                  <div className="row">
+                    <strong>R$ {product.price.toFixed(2)}</strong>
+                    <span className="button">Montar</span>
+                  </div>
+                </button>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <section className="panel panel--soft empty-state">
+            <strong>Nenhum produto disponível no momento.</strong>
+            <p className="muted">
+              O cardápio ainda não recebeu itens para exibição. Se isso não era esperado, vale verificar a base de dados do backend publicado.
+            </p>
+            <button type="button" className="button button--ghost" onClick={() => window.location.reload()}>
+              Recarregar
+            </button>
+          </section>
+        )}
       </section>
 
       {message ? <p className="success">{message}</p> : null}
