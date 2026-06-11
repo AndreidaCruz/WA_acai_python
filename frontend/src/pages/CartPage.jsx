@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../services/api'
 import SectionTitle from '../components/SectionTitle'
 import { useCart } from '../contexts/CartContext'
+import { useAuth } from '../contexts/AuthContext'
 import { emitNotification, getErrorMessage } from '../utils/notifications'
 
 const LAST_ORDER_CACHE_KEY = 'waacai-last-order-cache'
@@ -72,6 +73,7 @@ function formatMoney(value) {
 }
 
 export default function CartPage() {
+  const { user } = useAuth()
   const { items, total, removeItem, clear } = useCart()
   const [customer, setCustomer] = useState({ customer_name: '', phone: '', address: '', observations: '' })
   const [paymentMethod, setPaymentMethod] = useState('Pix')
@@ -82,6 +84,7 @@ export default function CartPage() {
   const [orderHistory, setOrderHistory] = useState(() => loadOrderHistory())
   const [settings, setSettings] = useState({ taxa_entrega: 0 })
   const orderSteps = ['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO', 'SAINDO_PARA_ENTREGA', 'FINALIZADO']
+  const isAdmin = user?.role === 'admin'
 
   const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items])
   const grandTotal = total + (settings.taxa_entrega || 0)
@@ -426,7 +429,7 @@ export default function CartPage() {
         {message ? <p className="success">{message}</p> : null}
       </section>
 
-      {currentOrder ? (
+      {!isAdmin && currentOrder ? (
         <section className="panel" id="tracking">
           <SectionTitle
             eyebrow="Acompanhamento"
@@ -542,8 +545,8 @@ export default function CartPage() {
               Atualizar agora
             </button>
           </div>
-          {trackedOrders.length > 0 ? (
-            <div className="stack" style={{ marginTop: '1rem' }} id="history">
+      {!isAdmin && trackedOrders.length > 0 ? (
+        <div className="stack" style={{ marginTop: '1rem' }} id="history">
               <SectionTitle
                 eyebrow="Pedidos salvos"
                 title="Acompanhamentos deste navegador"
