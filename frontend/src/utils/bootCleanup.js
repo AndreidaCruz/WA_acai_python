@@ -1,7 +1,11 @@
 const CLEANUP_FLAG = 'waacai-boot-cleanup-v1'
 
 export async function bootCleanup() {
-  if (!import.meta.env.PROD) return
+  const isLocalDev =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+
+  if (!import.meta.env.PROD && !isLocalDev) return
   if (sessionStorage.getItem(CLEANUP_FLAG) === '1') return
   sessionStorage.setItem(CLEANUP_FLAG, '1')
 
