@@ -300,6 +300,14 @@ def set_order_status(db: Session, order: Order, status_value: OrderStatus, user_
     return order
 
 
+def delete_order(db: Session, order: Order) -> None:
+    number = order.number
+    db.query(StockMovement).filter(StockMovement.order_id == order.id).update({StockMovement.order_id: None})
+    db.delete(order)
+    db.commit()
+    logger.info("order deleted number=%s", number)
+
+
 def cancel_order(db: Session, order: Order, user_id: int | None = None) -> Order:
     cancellable_statuses = {
         OrderStatus.ABERTO,

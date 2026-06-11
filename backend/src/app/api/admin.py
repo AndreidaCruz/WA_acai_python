@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from .. import crud, schemas
 from ..database import get_db
-from ..models import Role, User
+from ..models import Order, Role, User
 from .deps import current_user
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -56,6 +56,18 @@ def adjust_stock(stock_id: int, quantity_delta: float, reason: str = "Ajuste man
 def admin_orders(db: Session = Depends(get_db), user=Depends(admin_guard)):
     logger.debug("admin.orders viewed by user_id=%s", user.id)
     return crud.list_orders(db)
+
+
+@router.delete("/orders/{order_id}", status_code=204)
+def delete_admin_order(order_id: int, db: Session = Depends(get_db), user=Depends(admin_guard)):
+    target = db.get(Order, order_id)
+    if target is None:
+        from fastapi import HTTPException, status
+
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    crud.delete_order(db, target)
+    logger.info("admin.order_deleted order_id=%s by_user_id=%s", order_id, user.id)
+    return None
 
 
 @router.get("/users", response_model=list[schemas.UserRead])

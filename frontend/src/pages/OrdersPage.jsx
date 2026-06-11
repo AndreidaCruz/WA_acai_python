@@ -12,6 +12,10 @@ const STATUS_FLOW = [
   { value: 'CANCELADO', label: 'Cancelar' },
 ]
 
+function formatMoney(value) {
+  return Number(value ?? 0).toFixed(2)
+}
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -69,6 +73,27 @@ export default function OrdersPage() {
     }
   }
 
+  async function deleteOrder(order) {
+    if (!window.confirm(`Excluir permanentemente o pedido ${order.number}?`)) return
+    try {
+      await api.delete(`/api/admin/orders/${order.id}`)
+      setOrders((current) => current.filter((item) => item.id !== order.id))
+      emitNotification({
+        type: 'success',
+        title: 'Pedido excluído',
+        description: `Pedido ${order.number} removido do histórico administrativo.`,
+      })
+    } catch (error) {
+      if (!error?.response) {
+        emitNotification({
+          type: 'error',
+          title: 'Não foi possível excluir',
+          description: 'Verifique a conexão com o servidor.',
+        })
+      }
+    }
+  }
+
   const filteredOrders = useMemo(() => {
     if (statusFilter === 'ALL') return orders
     return orders.filter((order) => order.status === statusFilter)
@@ -120,7 +145,7 @@ export default function OrdersPage() {
                 <small>{order.address}</small>
               </div>
               <div className="stack stack--tight">
-                <strong>R$ {order.total.toFixed(2)}</strong>
+                <strong>R$ {formatMoney(order.total)}</strong>
                 <span className="muted">{order.items?.length || 0} item(ns)</span>
               </div>
             </div>
@@ -136,6 +161,13 @@ export default function OrdersPage() {
                   {status.label}
                 </button>
               ))}
+              <button
+                type="button"
+                className="chip chip--interactive"
+                onClick={() => deleteOrder(order)}
+              >
+                Excluir pedido
+              </button>
             </div>
           </article>
         ))}
