@@ -32,8 +32,15 @@ log_file = configure_logging(settings.debug)
 logger = logging.getLogger("waacai.app")
 
 
-def ensure_order_item_complements_combo_part_index() -> None:
+def ensure_order_table_columns() -> None:
     inspector = inspect(engine)
+    if "orders" in inspector.get_table_names():
+        order_columns = {column["name"] for column in inspector.get_columns("orders")}
+        if "payment_method" not in order_columns:
+            with engine.begin() as connection:
+                logger.info("startup: adding payment_method column to orders")
+                connection.execute(text("ALTER TABLE orders ADD COLUMN payment_method VARCHAR(40) NOT NULL DEFAULT 'Pix'"))
+
     if "order_item_complements" not in inspector.get_table_names():
         return
 
@@ -53,7 +60,7 @@ async def lifespan(app: FastAPI):
     logger.info("booting application %s", settings.app_name)
     logger.info("startup: creating database schema")
     Base.metadata.create_all(bind=engine)
-    ensure_order_item_complements_combo_part_index()
+    ensure_order_table_columns()
     from .seed import seed_data
 
     db = SessionLocal()

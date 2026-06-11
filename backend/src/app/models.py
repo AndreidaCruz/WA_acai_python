@@ -159,6 +159,7 @@ class Order(Base):
     phone: Mapped[str] = mapped_column(String(30), nullable=False)
     address: Mapped[str] = mapped_column(String(255), nullable=False)
     observations: Mapped[str | None] = mapped_column(Text, nullable=True)
+    payment_method: Mapped[str] = mapped_column(String(40), default="Pix", nullable=False)
     status: Mapped[OrderStatus] = mapped_column(Enum(OrderStatus), default=OrderStatus.ABERTO, nullable=False)
     subtotal: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     delivery_fee: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)

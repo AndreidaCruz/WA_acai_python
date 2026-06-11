@@ -143,6 +143,7 @@ class OrderCreate(BaseModel):
     phone: str = Field(min_length=1)
     address: str = Field(min_length=1)
     observations: str | None = None
+    payment_method: str = Field(default="Pix", min_length=1)
     delivery_fee: float = 0.0
     items: list[OrderItemCreate] = Field(default_factory=list)
 
@@ -179,6 +180,7 @@ class OrderRead(BaseModel):
     phone: str
     address: str
     observations: str | None
+    payment_method: str
     status: OrderStatus
     subtotal: float
     delivery_fee: float

@@ -124,6 +124,7 @@ def create_order(db: Session, payload, user_id: int | None = None) -> Order:
         phone=payload.phone,
         address=payload.address,
         observations=payload.observations,
+        payment_method=payload.payment_method,
         delivery_fee=payload.delivery_fee,
         status=OrderStatus.ABERTO,
     )

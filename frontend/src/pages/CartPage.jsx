@@ -8,6 +8,11 @@ import { emitNotification, getErrorMessage } from '../utils/notifications'
 const LAST_ORDER_CACHE_KEY = 'waacai-last-order-cache'
 const ORDER_HISTORY_KEY = 'waacai-order-history'
 const CANCELABLE_STATUSES = new Set(['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO'])
+const PAYMENT_OPTIONS = [
+  { value: 'Pix', label: 'Pix' },
+  { value: 'Cartão', label: 'Cartão' },
+  { value: 'Dinheiro', label: 'Dinheiro' },
+]
 
 function isValidOrder(order) {
   return Boolean(order && typeof order === 'object' && typeof order.number === 'string' && order.number.trim())
@@ -69,6 +74,7 @@ function formatMoney(value) {
 export default function CartPage() {
   const { items, total, removeItem, clear } = useCart()
   const [customer, setCustomer] = useState({ customer_name: '', phone: '', address: '', observations: '' })
+  const [paymentMethod, setPaymentMethod] = useState('Pix')
   const [message, setMessage] = useState('')
   const [lastOrder, setLastOrder] = useState(() => loadCachedOrder())
   const [lastOrderNumber, setLastOrderNumber] = useState(() => localStorage.getItem('waacai-last-order-number') || '')
@@ -79,6 +85,7 @@ export default function CartPage() {
 
   const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items])
   const grandTotal = total + (settings.taxa_entrega || 0)
+  const averageWait = settings.tempo_medio_entrega?.trim() || '30 a 40 min'
   const currentOrder =
     isValidOrder(tracking) ? tracking : isValidOrder(lastOrder) ? lastOrder : orderHistory.length > 0 ? orderHistory[0] : null
   const trackedOrders = useMemo(
@@ -209,6 +216,7 @@ export default function CartPage() {
         address: customer.address.trim(),
         observations: customer.observations.trim(),
         delivery_fee: settings.taxa_entrega || 0,
+        payment_method: paymentMethod,
         items: items.map((item) => ({
           product_id: item.product.id,
           quantity: item.quantity,
@@ -395,6 +403,16 @@ export default function CartPage() {
             <span className="field-label">Observações</span>
             <input value={customer.observations} onChange={(e) => setCustomer({ ...customer, observations: e.target.value })} />
           </label>
+          <label>
+            <span className="field-label">Forma de pagamento *</span>
+            <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+              {PAYMENT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <p className="form-hint">Campos obrigatórios marcados com * precisam ser preenchidos antes de finalizar.</p>
@@ -412,35 +430,56 @@ export default function CartPage() {
         <section className="panel" id="tracking">
           <SectionTitle
             eyebrow="Acompanhamento"
-            title={`Pedido ${currentOrder.number}`}
-            description="Confira exatamente o que foi pedido antes da produção avançar."
+            title="Acompanhe seu pedido"
+            description="Veja os detalhes do pedido, status e prazo estimado em um só lugar."
           />
-        <div className="stats-grid">
-          <div className="stat">
-            <strong>{currentOrder.status}</strong>
-            <span>Status</span>
-          </div>
-          <div className="stat">
-              <strong>R$ {formatMoney(currentOrder.total)}</strong>
-              <span>Total</span>
+          <div className="card tracking-overview">
+            <div className="tracking-overview__hero">
+              <div className="stack stack--tight">
+                <span className="eyebrow">Pedido</span>
+                <h3>{currentOrder.number}</h3>
+                <p className="muted">{currentOrder.customer_name}</p>
+              </div>
+              <div className="chip-row wrap">
+                <span className="chip chip--selected">{currentOrder.status}</span>
+                <span className="chip">Pagamento: {currentOrder.payment_method || paymentMethod}</span>
+                <span className="chip">Espera: {averageWait}</span>
+              </div>
             </div>
-            <div className="stat">
-              <strong>{currentOrder.items?.length || 0}</strong>
-              <span>Itens</span>
+            <div className="tracking-overview__grid">
+              <div className="stat">
+                <strong>R$ {formatMoney(currentOrder.total)}</strong>
+                <span>Valor do pedido</span>
+              </div>
+              <div className="stat">
+                <strong>{currentOrder.items?.length || 0}</strong>
+                <span>Itens</span>
+              </div>
+              <div className="stat">
+                <strong>{currentOrder.payment_method || paymentMethod}</strong>
+                <span>Forma de pagamento</span>
+              </div>
+              <div className="stat">
+                <strong>{averageWait}</strong>
+                <span>Tempo médio de espera</span>
+              </div>
             </div>
-          </div>
-
-          <div className="card card--compact tracking-summary">
-            <div className="tracking-summary__main">
-              <strong>{currentOrder.customer_name}</strong>
-              <span className="muted">{currentOrder.phone}</span>
-              <small>{currentOrder.address}</small>
+            <div className="tracking-overview__details">
+              <div>
+                <span className="muted">Endereço</span>
+                <strong>{currentOrder.address}</strong>
+              </div>
+              <div>
+                <span className="muted">Telefone</span>
+                <strong>{currentOrder.phone}</strong>
+              </div>
+              {currentOrder.observations ? (
+                <div>
+                  <span className="muted">Observações</span>
+                  <strong>{currentOrder.observations}</strong>
+                </div>
+              ) : null}
             </div>
-            <div className="tracking-summary__total">
-              <strong>R$ {formatMoney(currentOrder.total)}</strong>
-              <span className="muted">Total do pedido</span>
-            </div>
-            {currentOrder.observations ? <p className="muted">Observações: {currentOrder.observations}</p> : null}
           </div>
 
           <div className="stack tracking-order-list">
@@ -504,7 +543,7 @@ export default function CartPage() {
             </button>
           </div>
           {trackedOrders.length > 0 ? (
-            <div className="stack" style={{ marginTop: '1rem' }}>
+            <div className="stack" style={{ marginTop: '1rem' }} id="history">
               <SectionTitle
                 eyebrow="Pedidos salvos"
                 title="Acompanhamentos deste navegador"
