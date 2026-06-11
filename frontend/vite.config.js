@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
+  experimental: {
+    bundledDev: true,
+  },
   plugins: [react()],
   server: {
     port: 5173,
@@ -9,7 +12,7 @@ export default defineConfig({
       origin: [
         'http://localhost:5173',
         'http://127.0.0.1:5173',
-        'https://waacaipython.vercel.app',
+        'https://wacaipython.vercel.app',
       ],
     },
     proxy: {

@@ -20,7 +20,7 @@ class Settings(BaseModel):
         origin.strip()
         for origin in os.getenv(
             "CORS_ORIGINS",
-            "https://waacaipython.vercel.app,http://localhost:5173,http://127.0.0.1:5173",
+            "https://wacaipython.vercel.app,http://localhost:5173,http://127.0.0.1:5173",
         ).split(",")
         if origin.strip()
     ]
