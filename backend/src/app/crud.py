@@ -299,6 +299,33 @@ def set_order_status(db: Session, order: Order, status_value: OrderStatus, user_
     return order
 
 
+def cancel_order(db: Session, order: Order, user_id: int | None = None) -> Order:
+    cancellable_statuses = {
+        OrderStatus.ABERTO,
+        OrderStatus.ACEITO,
+        OrderStatus.EM_PREPARACAO,
+        OrderStatus.PRONTO,
+    }
+    if order.status == OrderStatus.CANCELADO:
+        logger.debug("order cancel skipped order=%s already canceled", order.number)
+        return order
+    if order.status not in cancellable_statuses:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Order can no longer be canceled")
+
+    previous_status = order.status
+    order.status = OrderStatus.CANCELADO
+    order.finalization_at = datetime.utcnow()
+    db.commit()
+    db.refresh(order)
+    logger.info(
+        "order canceled number=%s from=%s user_id=%s",
+        order.number,
+        previous_status.value,
+        user_id,
+    )
+    return order
+
+
 def list_low_stock(db: Session) -> list[StockProduct]:
     return list(db.scalars(select(StockProduct).where(StockProduct.quantity_current <= StockProduct.minimum_stock)).all())
 

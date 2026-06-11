@@ -48,6 +48,22 @@ def track_order(order_number: str, db: Session = Depends(get_db)):
     return order
 
 
+@router.patch("/track/{order_number}/cancel", response_model=schemas.OrderRead)
+def cancel_tracked_order(order_number: str, db: Session = Depends(get_db)):
+    logger.debug("orders.cancel requested order_number=%s", order_number)
+    order = (
+        db.query(Order)
+        .options(joinedload(Order.items).joinedload(OrderItem.complements))
+        .filter(Order.number == order_number)
+        .first()
+    )
+    if order is None:
+        from fastapi import HTTPException, status
+
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    return crud.cancel_order(db, order)
+
+
 @router.get("/{order_id}", response_model=schemas.OrderRead)
 def get_order(order_id: int, db: Session = Depends(get_db), user=Depends(admin_guard)):
     logger.debug("orders.get requested order_id=%s", order_id)

@@ -70,6 +70,7 @@ export function getErrorTitle(error) {
   if (path === '/api/auth/login' && status === 401) return 'Usuário inválido'
   if (path === '/api/auth/bootstrap-admin' && status >= 400) return 'Falha no setup'
   if (path === '/api/orders' && method === 'post' && status >= 400) return 'Pedido não concluído'
+  if (path.startsWith('/api/orders/track/') && path.endsWith('/cancel') && status >= 400) return 'Pedido não cancelado'
   if (path.startsWith('/api/orders/track/')) return null
   if (path.startsWith('/api/admin/orders') && status === 401) return 'Sessão expirada'
   if (path.startsWith('/api/admin') && status === 403) return 'Permissão negada'

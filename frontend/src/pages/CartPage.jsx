@@ -6,6 +6,8 @@ import { useCart } from '../contexts/CartContext'
 import { emitNotification, getErrorMessage } from '../utils/notifications'
 
 const LAST_ORDER_CACHE_KEY = 'waacai-last-order-cache'
+const ORDER_HISTORY_KEY = 'waacai-order-history'
+const CANCELABLE_STATUSES = new Set(['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO'])
 
 function isValidOrder(order) {
   return Boolean(order && typeof order === 'object' && typeof order.number === 'string' && order.number.trim())
@@ -29,6 +31,37 @@ function saveCachedOrder(order) {
   localStorage.setItem(LAST_ORDER_CACHE_KEY, JSON.stringify(order))
 }
 
+function loadOrderHistory() {
+  try {
+    const raw = localStorage.getItem(ORDER_HISTORY_KEY)
+    const parsed = raw ? JSON.parse(raw) : []
+    const history = Array.isArray(parsed) ? parsed.filter(isValidOrder) : []
+    if (history.length > 0) return history
+    const cachedOrder = loadCachedOrder()
+    return isValidOrder(cachedOrder) ? [cachedOrder] : []
+  } catch {
+    return []
+  }
+}
+
+function saveOrderHistory(orders) {
+  const validOrders = Array.isArray(orders) ? orders.filter(isValidOrder) : []
+  if (validOrders.length === 0) {
+    localStorage.removeItem(ORDER_HISTORY_KEY)
+    return
+  }
+  localStorage.setItem(ORDER_HISTORY_KEY, JSON.stringify(validOrders))
+}
+
+function upsertOrderHistory(orders, order) {
+  if (!isValidOrder(order)) return Array.isArray(orders) ? orders : []
+  return [order, ...(Array.isArray(orders) ? orders : []).filter((current) => current.number !== order.number)]
+}
+
+function canCustomerCancel(order) {
+  return isValidOrder(order) && CANCELABLE_STATUSES.has(order.status)
+}
+
 function formatMoney(value) {
   return Number(value ?? 0).toFixed(2)
 }
@@ -40,12 +73,14 @@ export default function CartPage() {
   const [lastOrder, setLastOrder] = useState(() => loadCachedOrder())
   const [lastOrderNumber, setLastOrderNumber] = useState(() => localStorage.getItem('waacai-last-order-number') || '')
   const [tracking, setTracking] = useState(() => loadCachedOrder())
+  const [orderHistory, setOrderHistory] = useState(() => loadOrderHistory())
   const [settings, setSettings] = useState({ taxa_entrega: 0 })
   const orderSteps = ['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO', 'SAINDO_PARA_ENTREGA', 'FINALIZADO']
 
   const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items])
   const grandTotal = total + (settings.taxa_entrega || 0)
-  const currentOrder = isValidOrder(tracking) ? tracking : isValidOrder(lastOrder) ? lastOrder : null
+  const currentOrder =
+    isValidOrder(tracking) ? tracking : isValidOrder(lastOrder) ? lastOrder : orderHistory.length > 0 ? orderHistory[0] : null
   const canCheckout =
     items.length > 0 &&
     customer.customer_name.trim().length > 0 &&
@@ -77,25 +112,45 @@ export default function CartPage() {
       }))
   }
 
-  async function refreshTracking() {
-    if (!lastOrderNumber) return
+  async function refreshOrderByNumber(orderNumber) {
+    if (!orderNumber) return null
     try {
-      const { data } = await api.get(`/api/orders/track/${lastOrderNumber}`)
+      const { data } = await api.get(`/api/orders/track/${orderNumber}`)
       if (isValidOrder(data)) {
-        setTracking(data)
-        saveCachedOrder(data)
+        setOrderHistory((current) => upsertOrderHistory(current, data))
+        if (orderNumber === lastOrderNumber) {
+          setTracking(data)
+          setLastOrder(data)
+          saveCachedOrder(data)
+        }
+        return data
       }
     } catch {
       const cachedOrder = loadCachedOrder()
-      if (cachedOrder?.number === lastOrderNumber) {
-        setTracking(cachedOrder)
+      if (cachedOrder?.number === orderNumber) {
+        setOrderHistory((current) => upsertOrderHistory(current, cachedOrder))
+        if (orderNumber === lastOrderNumber) {
+          setTracking(cachedOrder)
+          setLastOrder(cachedOrder)
+        }
+        return cachedOrder
       }
     }
+    return null
+  }
+
+  async function refreshTracking() {
+    if (!lastOrderNumber) return
+    await refreshOrderByNumber(lastOrderNumber)
   }
 
   useEffect(() => {
     api.get('/api/catalog').then(({ data }) => setSettings(data.settings || { taxa_entrega: 0 })).catch(() => null)
   }, [])
+
+  useEffect(() => {
+    saveOrderHistory(orderHistory)
+  }, [orderHistory])
 
   useEffect(() => {
     if (!lastOrderNumber) return undefined
@@ -112,6 +167,18 @@ export default function CartPage() {
       window.clearInterval(interval)
     }
   }, [lastOrderNumber])
+
+  useEffect(() => {
+    if (orderHistory.length === 0) return undefined
+
+    const interval = window.setInterval(() => {
+      orderHistory.forEach((order) => {
+        refreshOrderByNumber(order.number).catch(() => null)
+      })
+    }, 10000)
+
+    return () => window.clearInterval(interval)
+  }, [orderHistory, lastOrderNumber])
 
   async function checkout() {
     setMessage('')
@@ -163,6 +230,7 @@ export default function CartPage() {
         setLastOrderNumber(data.number)
         localStorage.setItem('waacai-last-order-number', data.number)
         saveCachedOrder(data)
+        setOrderHistory((current) => upsertOrderHistory(current, data))
         setMessage(`Pedido criado com sucesso: ${data.number}`)
       } else {
         setMessage('Pedido criado, mas a resposta veio incompleta. Tente atualizar o acompanhamento.')
@@ -179,6 +247,35 @@ export default function CartPage() {
       emitNotification({
         type: 'error',
         title: 'Pedido não concluído',
+        description,
+      })
+    }
+  }
+
+  async function cancelTrackedOrder(orderNumber) {
+    if (!orderNumber) return
+    try {
+      const { data } = await api.patch(`/api/orders/track/${orderNumber}/cancel`)
+      if (isValidOrder(data)) {
+        setOrderHistory((current) => upsertOrderHistory(current, data))
+        if (data.number === lastOrderNumber) {
+          setTracking(data)
+          setLastOrder(data)
+          saveCachedOrder(data)
+        }
+        setMessage(`Pedido ${data.number} cancelado com sucesso.`)
+        emitNotification({
+          type: 'success',
+          title: 'Pedido cancelado',
+          description: `Pedido ${data.number} foi cancelado.`,
+        })
+      }
+    } catch (error) {
+      const description = getErrorMessage(error)
+      setMessage(description)
+      emitNotification({
+        type: 'error',
+        title: 'Não foi possível cancelar',
         description,
       })
     }
@@ -401,6 +498,54 @@ export default function CartPage() {
             <button type="button" className="button button--ghost" onClick={() => refreshTracking().catch(() => null)}>
               Atualizar agora
             </button>
+          </div>
+        </section>
+      ) : null}
+
+      {orderHistory.length > 0 ? (
+        <section className="panel">
+          <SectionTitle
+            eyebrow="Histórico"
+            title="Pedidos em acompanhamento"
+            description="Cada pedido que você finalizar fica salvo aqui neste navegador até ser cancelado ou finalizado."
+          />
+          <div className="stack">
+            {orderHistory.map((order) => (
+              <article key={order.number} className="card card--compact tracking-order-item">
+                <div className="tracking-order-item__header">
+                  <div className="tracking-order-item__title">
+                    <strong>Pedido {order.number}</strong>
+                    <p className="muted">
+                      {order.created_at ? new Date(order.created_at).toLocaleString('pt-BR') : 'Sem data'}
+                    </p>
+                  </div>
+                  <div className="tracking-order-item__price">
+                    <strong>R$ {formatMoney(order.total)}</strong>
+                    <span className="muted">{order.status}</span>
+                  </div>
+                </div>
+
+                <div className="chip-row wrap">
+                  <span className="chip">{order.items?.length || 0} item(ns)</span>
+                  <span className="chip">{order.status}</span>
+                  <span className="chip chip--selected">Total R$ {formatMoney(order.total)}</span>
+                </div>
+
+                <div className="row row--space">
+                  <small className="muted">Acompanhe o status e cancele enquanto o pedido ainda estiver no prazo.</small>
+                  <div className="chip-row wrap">
+                    <button type="button" className="button button--ghost" onClick={() => refreshOrderByNumber(order.number).catch(() => null)}>
+                      Atualizar
+                    </button>
+                    {canCustomerCancel(order) ? (
+                      <button type="button" className="button" onClick={() => cancelTrackedOrder(order.number)}>
+                        Cancelar pedido
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
       ) : null}
