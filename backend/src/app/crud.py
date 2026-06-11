@@ -5,7 +5,7 @@ from datetime import datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from .models import (
     MovementType,
@@ -185,6 +185,14 @@ def create_order(db: Session, payload, user_id: int | None = None) -> Order:
     db.add(order)
     db.commit()
     db.refresh(order)
+    order = (
+        db.query(Order)
+        .options(joinedload(Order.items).joinedload(OrderItem.complements))
+        .filter(Order.id == order.id)
+        .first()
+    )
+    if order is None:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Order could not be reloaded")
     logger.info(
         "order created number=%s customer=%s user_id=%s items=%s subtotal=%.2f total=%.2f",
         order.number,
