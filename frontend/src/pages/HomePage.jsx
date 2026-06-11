@@ -24,6 +24,10 @@ function loadComposerStagedItems() {
   }
 }
 
+function formatMoney(value) {
+  return Number(value ?? 0).toFixed(2)
+}
+
 function normalizeCatalog(data) {
   const safe = data && typeof data === 'object' ? data : {}
   return {
@@ -302,7 +306,7 @@ export default function HomePage() {
                   <h3>{product.name}</h3>
                   <p>{product.description}</p>
                   <div className="row">
-                    <strong>R$ {product.price.toFixed(2)}</strong>
+                    <strong>R$ {formatMoney(product.price)}</strong>
                     <span className="button">Montar</span>
                   </div>
                 </button>
@@ -347,7 +351,7 @@ export default function HomePage() {
                 <div className="stack">
                   <div className="chip-row wrap">
                     <span className="chip">{selectedProduct.name}</span>
-                    <span className="chip">Base R$ {selectedProduct.price.toFixed(2)}</span>
+                    <span className="chip">Base R$ {formatMoney(selectedProduct.price)}</span>
                     {isComboProduct ? <span className="chip">{comboStep + 1}/2</span> : null}
                     {stagedItemsCount > 0 ? <span className="chip chip--selected">{stagedItemsCount} salvo(s)</span> : null}
                   </div>
@@ -384,7 +388,7 @@ export default function HomePage() {
                     const selectedIndex = selectedComplementIds.indexOf(stockProduct.id)
                     const selected = selectedIndex >= 0
                     const isFree = selected && selectedIndex < 3
-                    const priceLabel = isFree ? 'Grátis' : `+R$ ${stockProduct.complement_extra_price.toFixed(2)}`
+                    const priceLabel = isFree ? 'Grátis' : `+R$ ${formatMoney(stockProduct.complement_extra_price)}`
 
                     return (
                       <button

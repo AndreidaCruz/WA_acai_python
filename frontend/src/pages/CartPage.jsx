@@ -24,6 +24,10 @@ function saveCachedOrder(order) {
   localStorage.setItem(LAST_ORDER_CACHE_KEY, JSON.stringify(order))
 }
 
+function formatMoney(value) {
+  return Number(value ?? 0).toFixed(2)
+}
+
 export default function CartPage() {
   const { items, total, removeItem, clear } = useCart()
   const [customer, setCustomer] = useState({ customer_name: '', phone: '', address: '', observations: '' })
@@ -299,13 +303,13 @@ export default function CartPage() {
             title={`Pedido ${currentOrder.number}`}
             description="Confira exatamente o que foi pedido antes da produção avançar."
           />
-          <div className="stats-grid">
-            <div className="stat">
-              <strong>{currentOrder.status}</strong>
-              <span>Status</span>
-            </div>
-            <div className="stat">
-              <strong>R$ {currentOrder.total.toFixed(2)}</strong>
+        <div className="stats-grid">
+          <div className="stat">
+            <strong>{currentOrder.status}</strong>
+            <span>Status</span>
+          </div>
+          <div className="stat">
+              <strong>R$ {formatMoney(currentOrder.total)}</strong>
               <span>Total</span>
             </div>
             <div className="stat">
@@ -321,7 +325,7 @@ export default function CartPage() {
               <small>{currentOrder.address}</small>
             </div>
             <div className="tracking-summary__total">
-              <strong>R$ {currentOrder.total.toFixed(2)}</strong>
+              <strong>R$ {formatMoney(currentOrder.total)}</strong>
               <span className="muted">Total do pedido</span>
             </div>
             {currentOrder.observations ? <p className="muted">Observações: {currentOrder.observations}</p> : null}
@@ -339,8 +343,8 @@ export default function CartPage() {
                       <p className="muted">Qtd: {item.quantity}</p>
                     </div>
                     <div className="tracking-order-item__price">
-                      <strong>R$ {item.total_price.toFixed(2)}</strong>
-                      <span className="muted">R$ {item.unit_price.toFixed(2)} cada</span>
+                      <strong>R$ {formatMoney(item.total_price)}</strong>
+                      <span className="muted">R$ {formatMoney(item.unit_price)} cada</span>
                     </div>
                   </div>
 
@@ -354,7 +358,7 @@ export default function CartPage() {
                               const isFree = complement.extra_price === 0
                               return (
                                 <span key={complement.id} className="chip">
-                                  {complement.stock_product_name} x{complement.quantity_consumed} {isFree ? '• grátis' : `• +R$ ${complement.extra_price.toFixed(2)}`}
+                                  {complement.stock_product_name} x{complement.quantity_consumed} {isFree ? '• grátis' : `• +R$ ${formatMoney(complement.extra_price)}`}
                                 </span>
                               )
                             })}

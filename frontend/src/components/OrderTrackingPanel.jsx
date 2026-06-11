@@ -23,6 +23,10 @@ function saveCachedOrder(order) {
   localStorage.setItem(LAST_ORDER_CACHE_KEY, JSON.stringify(order))
 }
 
+function formatMoney(value) {
+  return Number(value ?? 0).toFixed(2)
+}
+
 function groupOrderItemComplements(item) {
   const complements = item.complements || []
   const hasComboPart = complements.some((complement) => complement.combo_part_index !== null && complement.combo_part_index !== undefined)
@@ -140,7 +144,7 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
           <span>Status</span>
         </div>
         <div className="stat">
-          <strong>R$ {currentOrder.total.toFixed(2)}</strong>
+          <strong>R$ {formatMoney(currentOrder.total)}</strong>
           <span>Total</span>
         </div>
         <div className="stat">
@@ -156,7 +160,7 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
           <small>{currentOrder.address}</small>
         </div>
         <div className="tracking-summary__total">
-          <strong>R$ {currentOrder.total.toFixed(2)}</strong>
+          <strong>R$ {formatMoney(currentOrder.total)}</strong>
           <span className="muted">Total do pedido</span>
         </div>
         {currentOrder.observations ? <p className="muted">Observações: {currentOrder.observations}</p> : null}
@@ -174,8 +178,8 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
                   <p className="muted">Qtd: {item.quantity}</p>
                 </div>
                 <div className="tracking-order-item__price">
-                  <strong>R$ {item.total_price.toFixed(2)}</strong>
-                  <span className="muted">R$ {item.unit_price.toFixed(2)} cada</span>
+                  <strong>R$ {formatMoney(item.total_price)}</strong>
+                  <span className="muted">R$ {formatMoney(item.unit_price)} cada</span>
                 </div>
               </div>
 
@@ -189,7 +193,7 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
                           const isFree = complement.extra_price === 0
                           return (
                             <span key={complement.id} className="chip">
-                              {complement.stock_product_name} x{complement.quantity_consumed} {isFree ? '• grátis' : `• +R$ ${complement.extra_price.toFixed(2)}`}
+                              {complement.stock_product_name} x{complement.quantity_consumed} {isFree ? '• grátis' : `• +R$ ${formatMoney(complement.extra_price)}`}
                             </span>
                           )
                         })}
