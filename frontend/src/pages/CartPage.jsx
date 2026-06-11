@@ -81,6 +81,10 @@ export default function CartPage() {
   const grandTotal = total + (settings.taxa_entrega || 0)
   const currentOrder =
     isValidOrder(tracking) ? tracking : isValidOrder(lastOrder) ? lastOrder : orderHistory.length > 0 ? orderHistory[0] : null
+  const trackedOrders = useMemo(
+    () => orderHistory.filter((order) => order.number !== currentOrder?.number),
+    [orderHistory, currentOrder?.number],
+  )
   const canCheckout =
     items.length > 0 &&
     customer.customer_name.trim().length > 0 &&
@@ -499,54 +503,53 @@ export default function CartPage() {
               Atualizar agora
             </button>
           </div>
-        </section>
-      ) : null}
+          {trackedOrders.length > 0 ? (
+            <div className="stack" style={{ marginTop: '1rem' }}>
+              <SectionTitle
+                eyebrow="Pedidos salvos"
+                title="Acompanhamentos deste navegador"
+                description="Todos os pedidos feitos neste aparelho ficam reunidos aqui para consulta e cancelamento enquanto estiverem elegíveis."
+              />
+              <div className="stack">
+                {trackedOrders.map((order) => (
+                  <article key={order.number} className="card card--compact tracking-order-item">
+                    <div className="tracking-order-item__header">
+                      <div className="tracking-order-item__title">
+                        <strong>Pedido {order.number}</strong>
+                        <p className="muted">
+                          {order.created_at ? new Date(order.created_at).toLocaleString('pt-BR') : 'Sem data'}
+                        </p>
+                      </div>
+                      <div className="tracking-order-item__price">
+                        <strong>R$ {formatMoney(order.total)}</strong>
+                        <span className="muted">{order.status}</span>
+                      </div>
+                    </div>
 
-      {orderHistory.length > 0 ? (
-        <section className="panel">
-          <SectionTitle
-            eyebrow="Histórico"
-            title="Pedidos em acompanhamento"
-            description="Cada pedido que você finalizar fica salvo aqui neste navegador até ser cancelado ou finalizado."
-          />
-          <div className="stack">
-            {orderHistory.map((order) => (
-              <article key={order.number} className="card card--compact tracking-order-item">
-                <div className="tracking-order-item__header">
-                  <div className="tracking-order-item__title">
-                    <strong>Pedido {order.number}</strong>
-                    <p className="muted">
-                      {order.created_at ? new Date(order.created_at).toLocaleString('pt-BR') : 'Sem data'}
-                    </p>
-                  </div>
-                  <div className="tracking-order-item__price">
-                    <strong>R$ {formatMoney(order.total)}</strong>
-                    <span className="muted">{order.status}</span>
-                  </div>
-                </div>
+                    <div className="chip-row wrap">
+                      <span className="chip">{order.items?.length || 0} item(ns)</span>
+                      <span className="chip">{order.status}</span>
+                      <span className="chip chip--selected">Total R$ {formatMoney(order.total)}</span>
+                    </div>
 
-                <div className="chip-row wrap">
-                  <span className="chip">{order.items?.length || 0} item(ns)</span>
-                  <span className="chip">{order.status}</span>
-                  <span className="chip chip--selected">Total R$ {formatMoney(order.total)}</span>
-                </div>
-
-                <div className="row row--space">
-                  <small className="muted">Acompanhe o status e cancele enquanto o pedido ainda estiver no prazo.</small>
-                  <div className="chip-row wrap">
-                    <button type="button" className="button button--ghost" onClick={() => refreshOrderByNumber(order.number).catch(() => null)}>
-                      Atualizar
-                    </button>
-                    {canCustomerCancel(order) ? (
-                      <button type="button" className="button" onClick={() => cancelTrackedOrder(order.number)}>
-                        Cancelar pedido
-                      </button>
-                    ) : null}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                    <div className="row row--space">
+                      <small className="muted">Acompanhe o status e cancele enquanto o pedido ainda estiver no prazo.</small>
+                      <div className="chip-row wrap">
+                        <button type="button" className="button button--ghost" onClick={() => refreshOrderByNumber(order.number).catch(() => null)}>
+                          Atualizar
+                        </button>
+                        {canCustomerCancel(order) ? (
+                          <button type="button" className="button" onClick={() => cancelTrackedOrder(order.number)}>
+                            Cancelar pedido
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </section>
       ) : null}
     </div>
