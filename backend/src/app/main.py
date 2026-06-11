@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
 if "--debug" in sys.argv:
@@ -32,14 +32,18 @@ log_file = configure_logging(settings.debug)
 logger = logging.getLogger("waacai.app")
 
 
-def ensure_sqlite_migrations() -> None:
-    if not settings.database_url.startswith("sqlite"):
+def ensure_order_item_complements_combo_part_index() -> None:
+    inspector = inspect(engine)
+    if "order_item_complements" not in inspector.get_table_names():
         return
+
+    columns = {column["name"] for column in inspector.get_columns("order_item_complements")}
+    if "combo_part_index" in columns:
+        return
+
     with engine.begin() as connection:
-        columns = {row[1] for row in connection.execute(text("PRAGMA table_info(order_item_complements)"))}
-        if "combo_part_index" not in columns:
-            logger.info("startup: adding combo_part_index column to order_item_complements")
-            connection.execute(text("ALTER TABLE order_item_complements ADD COLUMN combo_part_index INTEGER"))
+        logger.info("startup: adding combo_part_index column to order_item_complements")
+        connection.execute(text("ALTER TABLE order_item_complements ADD COLUMN combo_part_index INTEGER"))
 
 
 @asynccontextmanager
@@ -49,7 +53,7 @@ async def lifespan(app: FastAPI):
     logger.info("booting application %s", settings.app_name)
     logger.info("startup: creating database schema")
     Base.metadata.create_all(bind=engine)
-    ensure_sqlite_migrations()
+    ensure_order_item_complements_combo_part_index()
     from .seed import seed_data
 
     db = SessionLocal()
