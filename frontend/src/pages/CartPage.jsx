@@ -7,17 +7,22 @@ import { emitNotification, getErrorMessage } from '../utils/notifications'
 
 const LAST_ORDER_CACHE_KEY = 'waacai-last-order-cache'
 
+function isValidOrder(order) {
+  return Boolean(order && typeof order === 'object' && typeof order.number === 'string' && order.number.trim())
+}
+
 function loadCachedOrder() {
   try {
     const raw = localStorage.getItem(LAST_ORDER_CACHE_KEY)
-    return raw ? JSON.parse(raw) : null
+    const parsed = raw ? JSON.parse(raw) : null
+    return isValidOrder(parsed) ? parsed : null
   } catch {
     return null
   }
 }
 
 function saveCachedOrder(order) {
-  if (!order) {
+  if (!isValidOrder(order)) {
     localStorage.removeItem(LAST_ORDER_CACHE_KEY)
     return
   }
@@ -40,7 +45,7 @@ export default function CartPage() {
 
   const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items])
   const grandTotal = total + (settings.taxa_entrega || 0)
-  const currentOrder = tracking || lastOrder
+  const currentOrder = isValidOrder(tracking) ? tracking : isValidOrder(lastOrder) ? lastOrder : null
   const canCheckout =
     items.length > 0 &&
     customer.customer_name.trim().length > 0 &&
@@ -76,8 +81,10 @@ export default function CartPage() {
     if (!lastOrderNumber) return
     try {
       const { data } = await api.get(`/api/orders/track/${lastOrderNumber}`)
-      setTracking(data)
-      saveCachedOrder(data)
+      if (isValidOrder(data)) {
+        setTracking(data)
+        saveCachedOrder(data)
+      }
     } catch {
       const cachedOrder = loadCachedOrder()
       if (cachedOrder?.number === lastOrderNumber) {
@@ -151,15 +158,19 @@ export default function CartPage() {
         })),
       }
       const { data } = await api.post('/api/orders', payload)
-      setLastOrder(data)
-      setLastOrderNumber(data.number)
-      localStorage.setItem('waacai-last-order-number', data.number)
-      saveCachedOrder(data)
-      setMessage(`Pedido criado com sucesso: ${data.number}`)
+      if (isValidOrder(data)) {
+        setLastOrder(data)
+        setLastOrderNumber(data.number)
+        localStorage.setItem('waacai-last-order-number', data.number)
+        saveCachedOrder(data)
+        setMessage(`Pedido criado com sucesso: ${data.number}`)
+      } else {
+        setMessage('Pedido criado, mas a resposta veio incompleta. Tente atualizar o acompanhamento.')
+      }
       emitNotification({
         type: 'success',
         title: 'Pedido enviado',
-        description: `Pedido ${data.number} foi criado com sucesso.`,
+        description: isValidOrder(data) ? `Pedido ${data.number} foi criado com sucesso.` : 'Pedido criado com resposta incompleta.',
       })
       clear()
     } catch (error) {

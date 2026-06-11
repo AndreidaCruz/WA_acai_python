@@ -6,17 +6,22 @@ import SectionTitle from './SectionTitle'
 const ORDER_STEPS = ['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO', 'SAINDO_PARA_ENTREGA', 'FINALIZADO']
 const LAST_ORDER_CACHE_KEY = 'waacai-last-order-cache'
 
+function isValidOrder(order) {
+  return Boolean(order && typeof order === 'object' && typeof order.number === 'string' && order.number.trim())
+}
+
 function loadCachedOrder() {
   try {
     const raw = localStorage.getItem(LAST_ORDER_CACHE_KEY)
-    return raw ? JSON.parse(raw) : null
+    const parsed = raw ? JSON.parse(raw) : null
+    return isValidOrder(parsed) ? parsed : null
   } catch {
     return null
   }
 }
 
 function saveCachedOrder(order) {
-  if (!order) {
+  if (!isValidOrder(order)) {
     localStorage.removeItem(LAST_ORDER_CACHE_KEY)
     return
   }
@@ -66,14 +71,16 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
     setStoredOrderNumber(localStorage.getItem('waacai-last-order-number') || '')
   }, [orderNumberProp])
 
-  const currentOrder = order
+  const currentOrder = isValidOrder(order) ? order : null
 
   async function refreshTracking() {
     if (!orderNumber) return
     try {
       const { data } = await api.get(`/api/orders/track/${orderNumber}`)
-      setOrder(data)
-      saveCachedOrder(data)
+      if (isValidOrder(data)) {
+        setOrder(data)
+        saveCachedOrder(data)
+      }
     } catch {
       const cachedOrder = loadCachedOrder()
       if (cachedOrder?.number === orderNumber) {
