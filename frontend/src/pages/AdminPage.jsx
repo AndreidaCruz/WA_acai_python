@@ -335,9 +335,6 @@ export default function AdminPage() {
                 <span>Alertas</span>
               </div>
             </div>
-            <button type="button" className="button button--ghost admin-shell__refresh" onClick={() => loadAdminData().catch(() => null)}>
-              Atualizar dados
-            </button>
           </aside>
           <div className="stack">
             {!authLoading && isAdmin && dashboard ? <section className="panel">{renderSection()}</section> : null}
