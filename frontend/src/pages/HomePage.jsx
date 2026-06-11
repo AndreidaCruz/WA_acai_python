@@ -99,6 +99,8 @@ export default function HomePage() {
   const completedComboSelection = useMemo(() => [...comboParts[0], ...selectedComplementIds], [comboParts, selectedComplementIds])
   const selectedPaidComplements = isComboProduct ? completedComboSelection.slice(3) : selectedComplements.slice(3)
   const composerExtraTotal = selectedPaidComplements.reduce((sum, stockProduct) => sum + (stockProduct?.complement_extra_price || 0), 0)
+  const composerBaseTotal = selectedProduct ? selectedProduct.price * (isComboProduct ? 1 : quantity) : 0
+  const composerTotal = composerBaseTotal + (isComboProduct ? composerExtraTotal : composerExtraTotal * quantity)
   const stagedItemsCount = stagedItems.length
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0)
   const hasProducts = productList.length > 0
@@ -434,7 +436,12 @@ export default function HomePage() {
                         ? `${completedComboSelection.length} ingrediente(s) escolhidos no combo, ${Math.min(completedComboSelection.length, 6)} grátis`
                         : `${selectedComplementIds.length} ingrediente(s) selecionado(s), ${Math.min(selectedComplementIds.length, 3)} grátis`}
                     </span>
-                    <strong>Extra estimado: R$ {(isComboProduct ? composerExtraTotal : composerExtraTotal * quantity).toFixed(2)}</strong>
+                    <strong>Total estimado: R$ {formatMoney(composerTotal)}</strong>
+                  </div>
+                  <div className="chip-row wrap">
+                    <span className="chip">Base R$ {formatMoney(composerBaseTotal)}</span>
+                    <span className="chip">Extras R$ {formatMoney(isComboProduct ? composerExtraTotal : composerExtraTotal * quantity)}</span>
+                    <span className="chip chip--selected">Total R$ {formatMoney(composerTotal)}</span>
                   </div>
                   {stagedItems.length > 0 ? (
                     <div className="stack composer-staged">
