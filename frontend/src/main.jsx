@@ -5,8 +5,10 @@ import AppCrashBoundary from './components/AppCrashBoundary'
 import { AuthProvider } from './contexts/AuthContext'
 import { CartProvider } from './contexts/CartContext'
 import { ToastProvider } from './contexts/ToastContext'
-import { bootCleanup } from './utils/bootCleanup'
+import { bootCleanup, clearBootStorage } from './utils/bootCleanup'
 import './styles.css'
+
+clearBootStorage()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

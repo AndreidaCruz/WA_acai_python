@@ -287,8 +287,7 @@ export default function HomePage() {
           <h2 className="hero__title">{settings.nome_loja || 'WA Açaí'}</h2>
           <div className="chip-row hero__chips">
             <span className="chip">{settings.loja_aberta ? 'Loja aberta' : 'Loja fechada'}</span>
-            <span className="chip">{settings.tempo_medio_entrega || 'Entrega rápida'}</span>
-            <span className="chip">{cartCount} no carrinho</span>
+            <span className="chip">{`Tempo Entrega: ${settings.tempo_medio_entrega || '45 min'}`}</span>
           </div>
         </div>
       </section>

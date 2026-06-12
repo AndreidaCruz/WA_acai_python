@@ -351,7 +351,12 @@ export default function AdminPage() {
           <SectionTitle eyebrow="Admin" title="Acesso administrativo" description="Login, setup inicial e validação de sessão." />
 
           {setupStatus.needs_setup ? (
-            <>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+                bootstrapAdmin()
+              }}
+            >
               <SectionTitle
                 eyebrow="Setup inicial"
                 title="Criar primeiro administrador"
@@ -360,11 +365,29 @@ export default function AdminPage() {
               <div className="form-grid">
                 <label>
                   Nome
-                  <input value={setupForm.name} onChange={(e) => setSetupForm({ ...setupForm, name: e.target.value })} />
+                  <input
+                    value={setupForm.name}
+                    onChange={(e) => setSetupForm({ ...setupForm, name: e.target.value })}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault()
+                        event.currentTarget.form?.requestSubmit()
+                      }
+                    }}
+                  />
                 </label>
                 <label>
                   E-mail
-                  <input value={setupForm.email} onChange={(e) => setSetupForm({ ...setupForm, email: e.target.value })} />
+                  <input
+                    value={setupForm.email}
+                    onChange={(e) => setSetupForm({ ...setupForm, email: e.target.value })}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault()
+                        event.currentTarget.form?.requestSubmit()
+                      }
+                    }}
+                  />
                 </label>
                 <label>
                   Senha
@@ -372,19 +395,39 @@ export default function AdminPage() {
                     type="password"
                     value={setupForm.password}
                     onChange={(e) => setSetupForm({ ...setupForm, password: e.target.value })}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault()
+                        event.currentTarget.form?.requestSubmit()
+                      }
+                    }}
                   />
                 </label>
               </div>
-              <button type="button" className="button" onClick={bootstrapAdmin}>
+              <button type="submit" className="button">
                 Inicializar admin
               </button>
-            </>
+            </form>
           ) : (
-            <>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+                login()
+              }}
+            >
               <div className="form-grid">
                 <label>
                   Nome de Usuário ou E-mail
-                  <input value={credentials.email} onChange={(e) => setCredentials({ ...credentials, email: e.target.value })} />
+                  <input
+                    value={credentials.email}
+                    onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault()
+                        event.currentTarget.form?.requestSubmit()
+                      }
+                    }}
+                  />
                 </label>
                 <label>
                   Senha
@@ -392,13 +435,19 @@ export default function AdminPage() {
                     type="password"
                     value={credentials.password}
                     onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault()
+                        event.currentTarget.form?.requestSubmit()
+                      }
+                    }}
                   />
                 </label>
               </div>
-              <button type="button" className="button" onClick={login}>
+              <button type="submit" className="button">
                 Entrar como admin
               </button>
-            </>
+            </form>
           )}
         </section>
       )}

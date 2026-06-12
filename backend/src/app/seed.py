@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .models import Product, ProductComplement, Recipe, Role, StockProduct, StoreSettings, User
@@ -74,43 +74,57 @@ def deduplicate_existing_products(db: Session) -> None:
         )
 
 
-def ensure_default_admin(db: Session) -> None:
-    default_name = "admin"
-    default_email = "admin@waacai.local"
-    default_password = "Admin123"
+def ensure_admin_account(db: Session, *, name: str, email: str, password: str) -> None:
+    normalized_name = name.strip().casefold()
+    normalized_email = email.strip().casefold()
+    user = db.scalar(select(User).where(func.lower(User.email) == normalized_email))
 
-    existing_admin = db.scalar(
-        select(User).where(or_(func.lower(User.name) == default_name, func.lower(User.email) == default_email))
-    )
+    if user is None:
+        user = db.scalar(select(User).where(func.lower(User.name) == normalized_name))
 
-    if existing_admin is None:
+    if user is None:
         db.add(
             User(
-                name=default_name,
-                email=default_email,
+                name=name,
+                email=email,
                 phone=None,
-                password_hash=hash_password(default_password),
+                password_hash=hash_password(password),
                 role=Role.admin,
                 active=True,
             )
         )
-        logger.info("default admin created name=%s email=%s", default_name, default_email)
+        logger.info("admin account created name=%s email=%s", name, email)
         return
 
-    existing_admin.name = default_name
-    email_owner = db.scalar(select(User).where(User.email == default_email))
-    if email_owner is None or email_owner.id == existing_admin.id:
-        existing_admin.email = default_email
-    existing_admin.password_hash = hash_password(default_password)
-    existing_admin.role = Role.admin
-    existing_admin.active = True
-    logger.info("default admin ensured name=%s email=%s", default_name, default_email)
+    user.name = name
+    email_owner = db.scalar(select(User).where(func.lower(User.email) == normalized_email))
+    if email_owner is None or email_owner.id == user.id:
+        user.email = email
+    user.password_hash = hash_password(password)
+    user.role = Role.admin
+    user.active = True
+    logger.info("admin account ensured name=%s email=%s", name, email)
+
+
+def ensure_default_admins(db: Session) -> None:
+    ensure_admin_account(
+        db,
+        name="Andreida Cruz Ribeiro",
+        email="andreidacruzribeiro@gmail.com",
+        password="129673",
+    )
+    ensure_admin_account(
+        db,
+        name="admin",
+        email="admin@waacai.local",
+        password="Admin123",
+    )
 
 
 def seed_data(db: Session) -> None:
     normalize_existing_records(db)
     deduplicate_existing_products(db)
-    ensure_default_admin(db)
+    ensure_default_admins(db)
 
     store = db.get(StoreSettings, 1)
     if store is None:

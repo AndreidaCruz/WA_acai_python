@@ -54,7 +54,12 @@ def get_current_user(
         logger.warning("authentication required but no credentials provided")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
     payload = decode_token(credentials.credentials)
-    user = db.get(User, int(payload["sub"]))
+    try:
+        user_id = int(payload.get("sub"))
+    except (TypeError, ValueError):
+        logger.warning("token payload missing valid subject")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    user = db.get(User, user_id)
     if user is None or not user.active:
         logger.warning("token user not found or inactive")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")

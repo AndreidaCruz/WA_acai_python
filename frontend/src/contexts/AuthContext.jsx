@@ -49,12 +49,11 @@ export function AuthProvider({ children }) {
         setUser(data)
         writeCachedUser(data)
       } catch (error) {
-        const status = error?.response?.status
-        if (status === 401 || status === 403) {
-          setUser(null)
-          writeCachedUser(null)
-          setAuthToken(null)
-        } else if (!user) {
+        setUser(null)
+        writeCachedUser(null)
+        setAuthToken(null)
+
+        if (!user) {
           const cachedUser = readCachedUser()
           if (cachedUser) setUser(cachedUser)
         }

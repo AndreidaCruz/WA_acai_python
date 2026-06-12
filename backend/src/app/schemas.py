@@ -30,7 +30,7 @@ class UserRead(BaseModel):
 
     id: int
     name: str
-    email: EmailStr
+    email: str
     phone: str | None
     role: Role
 
