@@ -79,11 +79,19 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    localStorage.setItem(COMPOSER_DRAFTS_KEY, JSON.stringify(composerDrafts))
+    try {
+      localStorage.setItem(COMPOSER_DRAFTS_KEY, JSON.stringify(composerDrafts))
+    } catch {
+      // Ignore storage errors so the storefront still loads.
+    }
   }, [composerDrafts])
 
   useEffect(() => {
-    localStorage.setItem(COMPOSER_STAGED_ITEMS_KEY, JSON.stringify(stagedItems))
+    try {
+      localStorage.setItem(COMPOSER_STAGED_ITEMS_KEY, JSON.stringify(stagedItems))
+    } catch {
+      // Ignore storage errors so the storefront still loads.
+    }
   }, [stagedItems])
 
   const stockList = Array.isArray(catalog.stock) ? catalog.stock : []
@@ -274,20 +282,13 @@ export default function HomePage() {
         </section>
       ) : null}
 
-      <section className="hero panel">
-        <SectionTitle
-          eyebrow="Storefront"
-          title={settings.nome_loja || 'WA Açaí'}
-          description={settings.slogan || 'Cardápio, pedidos e estoque com controle administrativo'}
-        />
-        <div className="hero-grid">
-          <div>
-            <p className="muted">{settings.descricao_loja}</p>
-            <div className="chip-row">
-              <span className="chip">{settings.loja_aberta ? 'Loja aberta' : 'Loja fechada'}</span>
-              <span className="chip">{settings.tempo_medio_entrega || 'Entrega rápida'}</span>
-              <span className="chip">{cartCount} no carrinho</span>
-            </div>
+      <section className="hero panel hero--banner">
+        <div className="hero__content">
+          <h2 className="hero__title">{settings.nome_loja || 'WA Açaí'}</h2>
+          <div className="chip-row hero__chips">
+            <span className="chip">{settings.loja_aberta ? 'Loja aberta' : 'Loja fechada'}</span>
+            <span className="chip">{settings.tempo_medio_entrega || 'Entrega rápida'}</span>
+            <span className="chip">{cartCount} no carrinho</span>
           </div>
         </div>
       </section>

@@ -10,18 +10,39 @@ function createLineId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 }
 
-export function CartProvider({ children }) {
-  const [items, setItems] = useState(() => {
+function isCartItem(value) {
+  return Boolean(value && typeof value === 'object')
+}
+
+function readStoredCart() {
+  try {
     const stored = localStorage.getItem(STORAGE_KEY)
     const parsed = stored ? JSON.parse(stored) : []
-    return parsed.map((item) => ({
+    return Array.isArray(parsed) ? parsed.filter(isCartItem) : []
+  } catch {
+    try {
+      localStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // Ignore storage errors so cart can still boot empty.
+    }
+    return []
+  }
+}
+
+export function CartProvider({ children }) {
+  const [items, setItems] = useState(() =>
+    readStoredCart().map((item) => ({
       ...item,
       lineId: item.lineId || createLineId(),
-    }))
-  })
+    })),
+  )
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+    } catch {
+      // Ignore storage errors so cart updates never crash the UI.
+    }
   }, [items])
 
   function addItem(product, complements = [], quantity = 1, options = {}) {

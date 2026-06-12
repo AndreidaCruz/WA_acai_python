@@ -15,11 +15,15 @@ function readCachedUser() {
 }
 
 function writeCachedUser(user) {
-  if (user) {
-    localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user))
-    return
+  try {
+    if (user) {
+      localStorage.setItem(USER_CACHE_KEY, JSON.stringify(user))
+      return
+    }
+    localStorage.removeItem(USER_CACHE_KEY)
+  } catch {
+    // Ignore storage errors so auth state can still render.
   }
-  localStorage.removeItem(USER_CACHE_KEY)
 }
 
 export function AuthProvider({ children }) {
@@ -28,7 +32,12 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function load() {
-      const token = localStorage.getItem('waacai-token')
+      let token = null
+      try {
+        token = localStorage.getItem('waacai-token')
+      } catch {
+        token = null
+      }
       if (!token) {
         writeCachedUser(null)
         setLoading(false)

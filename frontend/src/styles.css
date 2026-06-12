@@ -269,8 +269,46 @@ input {
 
 .hero {
   background:
-    linear-gradient(135deg, rgba(124, 58, 237, 0.16), rgba(18, 9, 28, 0.94)),
+    linear-gradient(135deg, rgba(18, 9, 28, 0.72), rgba(18, 9, 28, 0.36)),
+    linear-gradient(90deg, rgba(18, 9, 28, 0.9), rgba(18, 9, 28, 0.28) 52%, rgba(18, 9, 28, 0.8)),
     var(--panel);
+}
+
+.hero--banner {
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  display: grid;
+  align-items: center;
+  background-image:
+    linear-gradient(135deg, rgba(18, 9, 28, 0.7), rgba(18, 9, 28, 0.28)),
+    linear-gradient(90deg, rgba(18, 9, 28, 0.92), rgba(18, 9, 28, 0.3) 52%, rgba(18, 9, 28, 0.72)),
+    url('/products/acai-700ml.png');
+  background-size: cover;
+  background-position: center 34%;
+  background-repeat: no-repeat;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  padding: 1.25rem;
+  text-align: center;
+  margin: 0 auto;
+  backdrop-filter: blur(4px);
+}
+
+.hero__title {
+  margin: 0.35rem 0 0;
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.hero__chips {
+  justify-content: center;
+  margin-top: 1.25rem;
 }
 
 .hero-grid,

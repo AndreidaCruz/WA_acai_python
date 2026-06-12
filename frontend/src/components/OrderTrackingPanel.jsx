@@ -21,15 +21,34 @@ function loadCachedOrder() {
 }
 
 function saveCachedOrder(order) {
-  if (!isValidOrder(order)) {
-    localStorage.removeItem(LAST_ORDER_CACHE_KEY)
-    return
+  try {
+    if (!isValidOrder(order)) {
+      localStorage.removeItem(LAST_ORDER_CACHE_KEY)
+      return
+    }
+    localStorage.setItem(LAST_ORDER_CACHE_KEY, JSON.stringify(order))
+  } catch {
+    // Ignore storage errors so the tracker can still render.
   }
-  localStorage.setItem(LAST_ORDER_CACHE_KEY, JSON.stringify(order))
+}
+
+function clearCachedOrder({ clearStoredNumber = true } = {}) {
+  try {
+    localStorage.removeItem(LAST_ORDER_CACHE_KEY)
+    if (clearStoredNumber) {
+      localStorage.removeItem('waacai-last-order-number')
+    }
+  } catch {
+    // Ignore storage errors so the tracker can still recover.
+  }
 }
 
 function formatMoney(value) {
   return Number(value ?? 0).toFixed(2)
+}
+
+function normalizeOrderNumber(orderNumber) {
+  return String(orderNumber ?? '').trim().replace(/^#/, '')
 }
 
 function groupOrderItemComplements(item) {
@@ -74,16 +93,26 @@ export default function OrderTrackingPanel({ orderNumber: orderNumberProp, title
   const currentOrder = isValidOrder(order) ? order : null
 
   async function refreshTracking() {
-    if (!orderNumber) return
+    const apiOrderNumber = normalizeOrderNumber(orderNumber)
+    if (!apiOrderNumber) return
     try {
-      const { data } = await api.get(`/api/orders/track/${orderNumber}`)
+      const { data } = await api.get(`/api/orders/track/${apiOrderNumber}`)
       if (isValidOrder(data)) {
         setOrder(data)
         saveCachedOrder(data)
       }
-    } catch {
+    } catch (error) {
+      const status = error?.response?.status
+      if (status === 404) {
+        setOrder(null)
+        clearCachedOrder({ clearStoredNumber: !orderNumberProp })
+        if (!orderNumberProp) {
+          setStoredOrderNumber('')
+        }
+        return
+      }
       const cachedOrder = loadCachedOrder()
-      if (cachedOrder?.number === orderNumber) {
+      if (normalizeOrderNumber(cachedOrder?.number) === apiOrderNumber) {
         setOrder(cachedOrder)
       }
     }

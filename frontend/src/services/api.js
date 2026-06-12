@@ -10,14 +10,27 @@ const api = axios.create({
 export function setAuthToken(token) {
   if (token) {
     api.defaults.headers.common.Authorization = `Bearer ${token}`
-    localStorage.setItem('waacai-token', token)
+    try {
+      localStorage.setItem('waacai-token', token)
+    } catch {
+      // Ignore storage errors so auth never crashes app startup.
+    }
   } else {
     delete api.defaults.headers.common.Authorization
-    localStorage.removeItem('waacai-token')
+    try {
+      localStorage.removeItem('waacai-token')
+    } catch {
+      // Ignore storage errors so auth never crashes app startup.
+    }
   }
 }
 
-const savedToken = localStorage.getItem('waacai-token')
+let savedToken = null
+try {
+  savedToken = localStorage.getItem('waacai-token')
+} catch {
+  savedToken = null
+}
 if (savedToken) {
   setAuthToken(savedToken)
 }
