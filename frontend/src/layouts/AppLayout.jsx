@@ -47,7 +47,6 @@ export default function AppLayout({ children }) {
               <div className="avatar">{initials || 'U'}</div>
               <div className="user-chip__meta">
                 <strong>{user.name}</strong>
-                <span>{isAdmin ? 'Administrador' : 'Cliente'}</span>
               </div>
               {isAdmin ? <span className="chip">Admin</span> : null}
               <button className="button button--ghost" onClick={logout}>
@@ -55,9 +54,14 @@ export default function AppLayout({ children }) {
               </button>
             </div>
           ) : (
-            <Link to="/admin" className="button button--ghost">
-              Entrar
-            </Link>
+            <div className="row">
+              <Link to="/register" className="button button--ghost">
+                Cadastre-se
+              </Link>
+              <Link to="/admin" className="button button--ghost">
+                Entrar
+              </Link>
+            </div>
           )}
         </div>
       </header>
