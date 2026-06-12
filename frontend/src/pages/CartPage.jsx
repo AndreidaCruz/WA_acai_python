@@ -8,6 +8,7 @@ import { emitNotification, getErrorMessage } from '../utils/notifications'
 
 const LAST_ORDER_CACHE_KEY = 'waacai-last-order-cache'
 const ORDER_HISTORY_KEY = 'waacai-order-history'
+const LAST_ORDER_NUMBER_KEY = 'waacai-last-order-number'
 const CANCELABLE_STATUSES = new Set(['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO'])
 const PAYMENT_OPTIONS = [
   { value: 'Pix', label: 'Pix' },
@@ -15,13 +16,23 @@ const PAYMENT_OPTIONS = [
   { value: 'Dinheiro', label: 'Dinheiro' },
 ]
 
+const GUEST_SCOPE = 'guest'
+
+function getStorageScope(userId) {
+  return userId ? `user:${userId}` : GUEST_SCOPE
+}
+
+function getScopedKey(baseKey, scope) {
+  return scope === GUEST_SCOPE ? baseKey : `${baseKey}:${scope}`
+}
+
 function isValidOrder(order) {
   return Boolean(order && typeof order === 'object' && typeof order.number === 'string' && order.number.trim())
 }
 
-function loadCachedOrder() {
+function loadCachedOrder(scope = GUEST_SCOPE) {
   try {
-    const raw = localStorage.getItem(LAST_ORDER_CACHE_KEY)
+    const raw = localStorage.getItem(getScopedKey(LAST_ORDER_CACHE_KEY, scope))
     const parsed = raw ? JSON.parse(raw) : null
     return isValidOrder(parsed) ? parsed : null
   } catch {
@@ -29,39 +40,60 @@ function loadCachedOrder() {
   }
 }
 
-function saveCachedOrder(order) {
+function saveCachedOrder(scope, order) {
   try {
     if (!isValidOrder(order)) {
-      localStorage.removeItem(LAST_ORDER_CACHE_KEY)
+      localStorage.removeItem(getScopedKey(LAST_ORDER_CACHE_KEY, scope))
       return
     }
-    localStorage.setItem(LAST_ORDER_CACHE_KEY, JSON.stringify(order))
+    localStorage.setItem(getScopedKey(LAST_ORDER_CACHE_KEY, scope), JSON.stringify(order))
   } catch {
     // Ignore storage errors so the cart can still render.
   }
 }
 
-function loadOrderHistory() {
+function loadStoredOrderNumber(scope = GUEST_SCOPE) {
   try {
-    const raw = localStorage.getItem(ORDER_HISTORY_KEY)
+    return localStorage.getItem(getScopedKey(LAST_ORDER_NUMBER_KEY, scope)) || ''
+  } catch {
+    return ''
+  }
+}
+
+function saveStoredOrderNumber(scope, orderNumber) {
+  try {
+    const key = getScopedKey(LAST_ORDER_NUMBER_KEY, scope)
+    if (!orderNumber) {
+      localStorage.removeItem(key)
+      return
+    }
+    localStorage.setItem(key, orderNumber)
+  } catch {
+    // Ignore storage errors so the cart can still render.
+  }
+}
+
+function loadOrderHistory(scope = GUEST_SCOPE) {
+  try {
+    const raw = localStorage.getItem(getScopedKey(ORDER_HISTORY_KEY, scope))
     const parsed = raw ? JSON.parse(raw) : []
     const history = Array.isArray(parsed) ? parsed.filter(isValidOrder) : []
     if (history.length > 0) return history
-    const cachedOrder = loadCachedOrder()
+    const cachedOrder = loadCachedOrder(scope)
     return isValidOrder(cachedOrder) ? [cachedOrder] : []
   } catch {
     return []
   }
 }
 
-function saveOrderHistory(orders) {
+function saveOrderHistory(scope, orders) {
   const validOrders = Array.isArray(orders) ? orders.filter(isValidOrder) : []
   try {
     if (validOrders.length === 0) {
-      localStorage.removeItem(ORDER_HISTORY_KEY)
+      localStorage.removeItem(getScopedKey(ORDER_HISTORY_KEY, scope))
       return
     }
-    localStorage.setItem(ORDER_HISTORY_KEY, JSON.stringify(validOrders))
+    localStorage.setItem(getScopedKey(ORDER_HISTORY_KEY, scope), JSON.stringify(validOrders))
   } catch {
     // Ignore storage errors so the cart can still render.
   }
@@ -77,10 +109,10 @@ function removeOrderFromHistory(orders, orderNumber) {
   return (Array.isArray(orders) ? orders : []).filter((current) => current.number !== orderNumber)
 }
 
-function clearOrderCacheIfMatches(orderNumber) {
-  const cachedOrder = loadCachedOrder()
+function clearOrderCacheIfMatches(orderNumber, scope = GUEST_SCOPE) {
+  const cachedOrder = loadCachedOrder(scope)
   if (cachedOrder?.number === orderNumber) {
-    saveCachedOrder(null)
+    saveCachedOrder(scope, null)
     return true
   }
   return false
@@ -101,16 +133,19 @@ function normalizeOrderNumber(orderNumber) {
 export default function CartPage() {
   const { user } = useAuth()
   const { items, total, removeItem, clear } = useCart()
+  const storageScope = getStorageScope(user?.id)
   const [customer, setCustomer] = useState({ customer_name: '', phone: '', address: '', observations: '' })
   const [paymentMethod, setPaymentMethod] = useState('Pix')
   const [message, setMessage] = useState('')
   const [lastOrder, setLastOrder] = useState(() => loadCachedOrder())
-  const [lastOrderNumber, setLastOrderNumber] = useState(() => localStorage.getItem('waacai-last-order-number') || '')
+  const [lastOrderNumber, setLastOrderNumber] = useState(() => loadStoredOrderNumber())
   const [tracking, setTracking] = useState(() => loadCachedOrder())
   const [orderHistory, setOrderHistory] = useState(() => loadOrderHistory())
+  const [ordersLoadedForScope, setOrdersLoadedForScope] = useState(false)
   const [settings, setSettings] = useState({ taxa_entrega: 0 })
   const orderSteps = ['ABERTO', 'ACEITO', 'EM_PREPARACAO', 'PRONTO', 'SAINDO_PARA_ENTREGA', 'FINALIZADO']
   const isAdmin = user?.role === 'admin'
+  const isLoggedInCustomer = Boolean(user && !isAdmin)
 
   const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items])
   const grandTotal = items.length > 0 ? total + (settings.taxa_entrega || 0) : 0
@@ -162,7 +197,7 @@ export default function CartPage() {
         if (apiOrderNumber === normalizeOrderNumber(lastOrderNumber)) {
           setTracking(data)
           setLastOrder(data)
-          saveCachedOrder(data)
+          saveCachedOrder(storageScope, data)
         }
         return data
       }
@@ -170,20 +205,20 @@ export default function CartPage() {
       const status = error?.response?.status
       if (status === 404) {
         setOrderHistory((current) => removeOrderFromHistory(current, apiOrderNumber))
-        const cacheCleared = clearOrderCacheIfMatches(apiOrderNumber)
+        const cacheCleared = clearOrderCacheIfMatches(apiOrderNumber, storageScope)
         if (apiOrderNumber === normalizeOrderNumber(lastOrderNumber) || cacheCleared) {
           setTracking(null)
           setLastOrder(null)
           setLastOrderNumber('')
           try {
-            localStorage.removeItem('waacai-last-order-number')
+            localStorage.removeItem(getScopedKey(LAST_ORDER_NUMBER_KEY, storageScope))
           } catch {
             // Ignore storage errors so the cart can still recover.
           }
         }
         return null
       }
-      const cachedOrder = loadCachedOrder()
+      const cachedOrder = loadCachedOrder(storageScope)
       if (cachedOrder?.number === orderNumber) {
         setOrderHistory((current) => upsertOrderHistory(current, cachedOrder))
         if (orderNumber === lastOrderNumber) {
@@ -206,8 +241,52 @@ export default function CartPage() {
   }, [])
 
   useEffect(() => {
-    saveOrderHistory(orderHistory)
-  }, [orderHistory])
+    if (!ordersLoadedForScope) return
+    saveOrderHistory(storageScope, orderHistory)
+  }, [orderHistory, storageScope, ordersLoadedForScope])
+
+  useEffect(() => {
+    let active = true
+
+    setOrdersLoadedForScope(false)
+    if (!isLoggedInCustomer) {
+      setLastOrder(null)
+      setTracking(null)
+      setLastOrderNumber('')
+      setOrderHistory([])
+      setOrdersLoadedForScope(true)
+      return undefined
+    }
+
+    setLastOrder(loadCachedOrder(storageScope))
+    setTracking(loadCachedOrder(storageScope))
+    setLastOrderNumber(loadStoredOrderNumber(storageScope))
+
+    api
+      .get('/api/orders/me')
+      .then(({ data }) => {
+        if (!active) return
+        const history = Array.isArray(data) ? data.filter(isValidOrder) : []
+        setOrderHistory(history)
+        saveOrderHistory(storageScope, history)
+        const latestOrder = history[0] || null
+        setLastOrder(latestOrder)
+        setTracking(latestOrder)
+        setLastOrderNumber(latestOrder?.number || '')
+        saveCachedOrder(storageScope, latestOrder)
+        saveStoredOrderNumber(storageScope, latestOrder?.number || '')
+        setOrdersLoadedForScope(true)
+      })
+      .catch(() => {
+        if (!active) return
+        setOrderHistory(loadOrderHistory(storageScope))
+        setOrdersLoadedForScope(true)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [storageScope, isLoggedInCustomer, user?.id])
 
   useEffect(() => {
     if (!lastOrderNumber) return undefined
@@ -223,7 +302,7 @@ export default function CartPage() {
       active = false
       window.clearInterval(interval)
     }
-  }, [lastOrderNumber])
+  }, [lastOrderNumber, storageScope])
 
   useEffect(() => {
     if (orderHistory.length === 0) return undefined
@@ -235,7 +314,7 @@ export default function CartPage() {
     }, 10000)
 
     return () => window.clearInterval(interval)
-  }, [orderHistory, lastOrderNumber])
+  }, [orderHistory, lastOrderNumber, storageScope])
 
   async function checkout() {
     setMessage('')
@@ -286,12 +365,8 @@ export default function CartPage() {
       if (isValidOrder(data)) {
         setLastOrder(data)
         setLastOrderNumber(data.number)
-        try {
-          localStorage.setItem('waacai-last-order-number', data.number)
-        } catch {
-          // Ignore storage errors so checkout still succeeds.
-        }
-        saveCachedOrder(data)
+        saveStoredOrderNumber(storageScope, data.number)
+        saveCachedOrder(storageScope, data)
         setOrderHistory((current) => upsertOrderHistory(current, data))
         setMessage(`Pedido criado com sucesso: ${data.number}`)
       } else {
@@ -324,7 +399,7 @@ export default function CartPage() {
         if (normalizeOrderNumber(data.number) === normalizeOrderNumber(lastOrderNumber)) {
           setTracking(data)
           setLastOrder(data)
-          saveCachedOrder(data)
+          saveCachedOrder(storageScope, data)
         }
         setMessage(`Pedido ${data.number} cancelado com sucesso.`)
         emitNotification({

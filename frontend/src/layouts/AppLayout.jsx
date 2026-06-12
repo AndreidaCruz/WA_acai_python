@@ -27,8 +27,8 @@ export default function AppLayout({ children }) {
         </Link>
         <nav className="nav nav--primary">
           <NavLink to="/">Cardápio</NavLink>
-          {isAdmin ? null : <OrderTrackingPanel compact />}
-          {isAdmin ? null : <NavLink to="/cart#history">Histórico</NavLink>}
+          {user && !isAdmin ? <OrderTrackingPanel compact /> : null}
+          {user && !isAdmin ? <NavLink to="/cart#history">Histórico</NavLink> : null}
           {isAdmin ? <NavLink to="/orders">Pedidos</NavLink> : null}
           {isAdmin ? <NavLink to="/admin">Admin</NavLink> : null}
           {isAdmin ? <NavLink to="/settings">Configurações</NavLink> : null}
