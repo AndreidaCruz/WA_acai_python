@@ -383,7 +383,7 @@ export default function AdminPage() {
             <>
               <div className="form-grid">
                 <label>
-                  E-mail
+                  Nome de Usuário ou E-mail
                   <input value={credentials.email} onChange={(e) => setCredentials({ ...credentials, email: e.target.value })} />
                 </label>
                 <label>

@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from .models import (
@@ -42,6 +42,16 @@ def get_user_by_email(db: Session, email: str) -> User | None:
     return db.scalar(select(User).where(User.email == email))
 
 
+def get_user_by_identifier(db: Session, identifier: str) -> User | None:
+    normalized = identifier.strip()
+    if not normalized:
+        return None
+    lowered = normalized.casefold()
+    return db.scalar(
+        select(User).where(or_(func.lower(User.email) == lowered, func.lower(User.name) == lowered))
+    )
+
+
 def count_admins(db: Session) -> int:
     return db.scalar(
         select(func.count()).select_from(User).where(User.role == Role.admin, User.active.is_(True))
@@ -59,15 +69,15 @@ def create_user(db: Session, name: str, email: str, phone: str | None, password:
     return user
 
 
-def authenticate_user(db: Session, email: str, password: str) -> User | None:
-    user = get_user_by_email(db, email)
+def authenticate_user(db: Session, identifier: str, password: str) -> User | None:
+    user = get_user_by_identifier(db, identifier)
     if user is None or not user.active:
-        logger.warning("authentication failed email=%s reason=missing_or_inactive", mask_email(email))
+        logger.warning("authentication failed email=%s reason=missing_or_inactive", mask_email(identifier))
         return None
     if verify_password(password, user.password_hash):
-        logger.info("authentication success user_id=%s email=%s role=%s", user.id, mask_email(email), user.role.value)
+        logger.info("authentication success user_id=%s email=%s role=%s", user.id, mask_email(identifier), user.role.value)
         return user
-    logger.warning("authentication failed email=%s reason=invalid_password", mask_email(email))
+    logger.warning("authentication failed email=%s reason=invalid_password", mask_email(identifier))
     return None
 
 
