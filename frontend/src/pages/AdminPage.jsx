@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import api from '../services/api'
 import SectionTitle from '../components/SectionTitle'
 import { useAuth } from '../contexts/AuthContext'
@@ -11,7 +12,7 @@ const ADMIN_SECTIONS = [
 ]
 
 export default function AdminPage() {
-  const { user, loading: authLoading, logout, login: authLogin, setSession } = useAuth()
+  const { user, loading: authLoading, login: authLogin, setSession } = useAuth()
   const isAdmin = user?.role === 'admin'
   const [setupStatus, setSetupStatus] = useState({ needs_setup: false })
   const [setupForm, setSetupForm] = useState({ name: 'Administrador', email: '', password: '' })
@@ -290,19 +291,8 @@ export default function AdminPage() {
     )
   }
 
-  if (user ? !isAdmin : false) {
-    return (
-      <section className="panel panel--warning">
-        <SectionTitle
-          eyebrow="Acesso negado"
-          title="Este usuário não é administrador"
-          description="O painel administrativo só abre para sessões validadas pelo backend com papel admin."
-        />
-        <button type="button" className="button button--ghost" onClick={logout}>
-          Sair
-        </button>
-      </section>
-    )
+  if (user && !isAdmin) {
+    return <Navigate to="/" replace />
   }
 
   return (
