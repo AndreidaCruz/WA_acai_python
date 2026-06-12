@@ -348,7 +348,7 @@ export default function AdminPage() {
         </div>
       ) : (
         <section className="panel">
-          <SectionTitle eyebrow="Admin" title="Acesso administrativo" description="Login, setup inicial e validação de sessão." />
+          <SectionTitle eyebrow="Acessar sua Conta" />
 
           {setupStatus.needs_setup ? (
             <form
@@ -445,7 +445,7 @@ export default function AdminPage() {
                 </label>
               </div>
               <button type="submit" className="button">
-                Entrar como admin
+                Entrar
               </button>
             </form>
           )}
